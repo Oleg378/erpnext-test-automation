@@ -13,7 +13,7 @@ export default defineConfig({
         headless: false,
         viewport: { width: 1280, height: 720 },
         screenshot: 'only-on-failure',
-        trace: 'retain-on-failure',
+        trace: 'on',
         baseURL: 'http://localhost:8081/',
     },
     projects: [
@@ -22,6 +22,7 @@ export default defineConfig({
             use: {
                 browserName: 'chromium',
                 headless: false,
+                trace: 'on',
                 viewport: { width: 1280, height: 720 },
             },
         },

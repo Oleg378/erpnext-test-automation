@@ -1,19 +1,17 @@
-import {Page, BrowserContext, APIRequestContext, TestInfo, TestType, expect} from '@playwright/test';
+import {Page, BrowserContext, TestInfo, TestType, expect} from '@playwright/test';
 import {Locator} from "playwright-core";
 
 export class PageManager {
     private page: Page;
     private context: BrowserContext;
-    private request: APIRequestContext;
     private testInfo: TestInfo;
     private test: TestType<any, any>;
 
     private static readonly WAIT_MS = 10_000;
 
-    constructor(page: Page, context: BrowserContext, request: APIRequestContext, testInfo: TestInfo, test: TestType<any, any>) {
+    constructor(page: Page, context: BrowserContext, testInfo: TestInfo, test: TestType<any, any>) {
         this.page = page;
         this.context = context;
-        this.request = request;
         this.testInfo = testInfo;
         this.test = test;
     }

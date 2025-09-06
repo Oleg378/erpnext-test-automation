@@ -9,10 +9,10 @@ export class LoginPage {
     }
 
     async loginAsAdmin() {
-        await this.manager.fillInput('input#login_email', 'Administrator', 'fill log in email')
-        await this.manager.fillInput('input#login_password', 'admin')
+        await this.manager.fillInput('input#login_email', 'Administrator', 'fill log in email \'Administrator\'')
+        await this.manager.fillInput('input#login_password', 'admin', 'fill in password \'admin\'')
 
-        await this.manager.click('button.btn-login', 'Click on login button');
+        await this.manager.click('button.btn-login', 'Click on \'login\' button');
         return new HomePage(this.manager);
     }
 }

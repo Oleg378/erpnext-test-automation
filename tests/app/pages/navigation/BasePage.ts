@@ -9,8 +9,7 @@ export class BasePage {
     }
 
     async navigateTo<T extends BasePage>(section: NavigationTarget<T>): Promise<T> {
-        await this.manager.click(section.button);
-        //await this.manager.assertElementIsVisible(section.visibleElement);
+        await this.manager.click(section.button, `navigate to ${section.returnType.name}`);
         await this.manager.locateElementByText(section.visibleElement);
         return new section.returnType(this.manager);
     }
