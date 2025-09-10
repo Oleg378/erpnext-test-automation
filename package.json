@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test",
+    "test": "playwright test --project=chromium",
     "test:report": "npm test && allure generate allure-results -o allure-report",
-    "report": "allure serve allure-results"
+    "report": "allure serve allure-results",
+    "trace": "playwright show-trace"
   },
   "repository": {
     "type": "git",
