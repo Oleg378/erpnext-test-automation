@@ -1,6 +1,6 @@
 import { test as baseTest } from '@playwright/test';
-import {ApiManager} from "../tools/ApiManager";
-import {PageManager} from "../tools/PageManager";
+import {ApiManager} from '../tools/ApiManager';
+import {PageManager} from '../tools/PageManager';
 
 export const test =  baseTest.extend<{
     apiManager: ApiManager;

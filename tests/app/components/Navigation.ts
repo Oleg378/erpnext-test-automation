@@ -1,10 +1,10 @@
-import {BasePage} from "../pages/navigation/BasePage";
-import {HomePage} from "../pages/navigation/HomePage";
-import {AccountingPage} from "../pages/navigation/AccountingPage";
-import {PayablesPage} from "../pages/navigation/PayablesPage";
-import {SellingPage} from "../pages/navigation/SellingPage";
-import {StockPage} from "../pages/navigation/StockPage";
-import {PageManager} from "../../tools/PageManager";
+import {BasePage} from '../pages/navigation/BasePage';
+import {PageManager} from '../../tools/PageManager';
+import {HomePage} from '../pages/navigation/HomePage';
+import {AccountingPage} from '../pages/navigation/AccountingPage';
+import {PayablesPage} from '../pages/navigation/PayablesPage';
+import {SellingPage} from '../pages/navigation/SellingPage';
+import {StockPage} from '../pages/navigation/StockPage';
 
 export interface NavigationTarget<T extends BasePage = BasePage> {
     readonly button: string;

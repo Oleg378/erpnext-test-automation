@@ -1,5 +1,4 @@
-import {Page, BrowserContext, TestInfo, TestType, expect} from '@playwright/test';
-import {Locator} from "playwright-core";
+import {Page, BrowserContext, TestInfo, TestType, Locator, expect} from '@playwright/test';
 
 export class PageManager {
     private page: Page;

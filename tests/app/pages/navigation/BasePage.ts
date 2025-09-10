@@ -1,5 +1,5 @@
-import {PageManager} from "../../../tools/PageManager";
-import {NavigationTarget} from "../../components/Navigation";
+import {PageManager} from '../../../tools/PageManager';
+import {NavigationTarget} from '../../components/Navigation';
 
 export class BasePage {
     private readonly manager: PageManager;
