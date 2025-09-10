@@ -1,5 +1,5 @@
-import {PageManager} from "../../tools/PageManager";
-import {HomePage} from "./navigation/HomePage";
+import {PageManager} from '../../tools/PageManager';
+import {HomePage} from './navigation/HomePage';
 
 export class LoginPage {
     private readonly manager: PageManager;
@@ -15,4 +15,11 @@ export class LoginPage {
         await this.manager.click('button.btn-login', 'Click on \'login\' button');
         return new HomePage(this.manager);
     }
+
+    // first log in after fresh install:
+    // input[data-fieldname='language'] English
+    // button.next-btn
+    // input[data-fieldname='full_name'] boba dodod
+    // input[data-fieldname='email'] sdfsd@tes.com
+    // input[data-fieldname='password'] asdsafds123!
 }

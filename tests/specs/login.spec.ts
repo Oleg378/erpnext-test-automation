@@ -1,20 +1,28 @@
-import {test} from "../fixtures/manager.fixture";
-import {Navigation} from "../app/components/Navigation";
+import {Navigation} from '../app/components/Navigation';
+import {LoginPage} from '../app/pages/LoginPage';
+import {HomePage} from '../app/pages/navigation/HomePage';
+import {PayablesPage} from '../app/pages/navigation/PayablesPage';
+import {test} from '../fixtures/combined.test.fixture';
 
-import {LoginPage} from "../app/pages/LoginPage";
-import {HomePage} from "../app/pages/navigation/HomePage";
-import {PayablesPage} from "../app/pages/navigation/PayablesPage";
+test.beforeAll(async ({apiManager}) => {
+    let testGet = await apiManager.get('/');
+    await apiManager.expectResponseToBeOk(testGet);
+})
 
-    // first log in
-    // input[data-fieldname="language"] English
-    // button.next-btn
-    // input[data-fieldname="full_name"] boba dodod
-    // input[data-fieldname="email"] sdfsd@tes.com
-    // input[data-fieldname="password"] asdsafds123!
+test.describe('API + UI DEMO:', () => {
+    test('API DEMO: ping base url', async ({apiManager}) => {
+        let data = {
+            'usr': 'Administrator',
+            'pwd': 'admin'
+        }
+        await apiManager.post('/api/method/login', data);
+        let testGet = await apiManager.get('/api/resource/Customer');
+        await apiManager.expectResponseToBeOk(testGet);
+    })
 
-
-test('DEMO: Login as admin', async ({ manager }) => {
-    let homePage: HomePage = await new LoginPage(manager).loginAsAdmin();
-    let payablesPage: PayablesPage = await homePage.navigateTo(Navigation.ACCOUNTING);
-    await payablesPage.navigateTo(Navigation.STOCK);
-});
+    test('IU DEMO: Login as admin', async ({ pageManager }) => {
+        let homePage: HomePage = await new LoginPage(pageManager).loginAsAdmin();
+        let payablesPage: PayablesPage = await homePage.navigateTo(Navigation.ACCOUNTING);
+        await payablesPage.navigateTo(Navigation.STOCK);
+    });
+})
