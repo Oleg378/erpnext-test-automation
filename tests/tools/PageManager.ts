@@ -15,22 +15,22 @@ export class PageManager {
         this.test = test;
     }
 
-    async init() {
+    async init(): Promise<void> {
         await this.gotoHome();
     }
 
-    async gotoHome() {
-        await this.page.goto('http://localhost:8081/');
+    async gotoHome(): Promise<void> {
+        await this.page.goto('/');
     }
 
-    async click(selector: string, description?: string) {
+    async click(selector: string, description?: string): Promise<void> {
         await this.withStep(description || `Click on ${selector}`, async () => {
             await this.page.click(selector);
         })
     }
 
     // await page.fill('input[data-fieldname="item_code"]:visible', 'your_value');
-    async fillInput(input: string, value: string, description?: string) {
+    async fillInput(input: string, value: string, description?: string): Promise<void> {
         await this.test.step(description || `Fill input ${input} with "${value}"`, async () => {
             let locator: Locator = this.page.locator(input).first()
             await locator.fill(value);
@@ -39,14 +39,14 @@ export class PageManager {
         });
     }
 
-    async assertElementIsVisible(locator: string, description?: string) {
+    async assertElementIsVisible(locator: string, description?: string): Promise<void> {
         await this.withStep(description || `Element ${locator} is confirmed to be visible`, async () => {
             let element: Locator = this.page.locator(locator).first();
             await expect(element).toBeVisible({timeout: PageManager.WAIT_MS});
         })
     }
 
-    async locateElementByText(text: string) {
+    async locateElementByText(text: string): Promise<void> {
         await this.withStep(`Text ${text} is visible`, async () => {
             let locator: Locator = this.page.getByText(text).first();
             await expect(locator).toBeVisible({ timeout: PageManager.WAIT_MS });
@@ -56,7 +56,7 @@ export class PageManager {
     }
 
 
-    async wait(number: number) {
+    async wait(number: number): Promise<void> {
         await this.page.waitForTimeout(number)
     }
 

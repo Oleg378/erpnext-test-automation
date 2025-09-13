@@ -1,9 +1,13 @@
 import {ApiManager} from '../../tools/ApiManager';
 import {ProfileRole} from '../../tools/ProfileRoles';
+import {TestDataFactory} from '../../tools/TestDataFactory';
 
-export class ApiUtils {
+export class ApiClient {
+    private constructor() {
+        throw Error('ApiClient instances are not allowed!');
+    }
 
-    static async getAdminCookies(apiManager: ApiManager) {
+    static async postRetrieveAdminCookies(apiManager: ApiManager): Promise<void> {
         const data = {
             'usr': 'Administrator',
             'pwd': 'admin'
@@ -11,18 +15,16 @@ export class ApiUtils {
         await apiManager.post('/api/method/login', data);
     }
 
-    static async getListOfCustomers(apiManager: ApiManager) {
+    static async getListOfCustomers(apiManager: ApiManager): Promise<void> {
         const response = await apiManager.get('/api/resource/Customer');
         await apiManager.expectResponseToBeOk(response);
-    }
-
-    static async generateUsername(): Promise<string> {
-        return Date.now().toString()
+        const buffer: Buffer = await response.body();
+        const responseBody: string = buffer.toString('utf-8');
+        await apiManager.attachDataToReport('Existing customers: ', responseBody)
     }
 
     static async postCreateNewUser(apiManager: ApiManager, profileRole: ProfileRole, username?: string): Promise<string>  {
-        await ApiUtils.getAdminCookies(apiManager)
-        const baseUsername = username || await ApiUtils.generateUsername();
+        const baseUsername = username || await TestDataFactory.generateUsername();
         const finalUsername = `${profileRole.role_profile_name}${baseUsername}`;
         const data = {
             email: `${finalUsername}@example.com`,

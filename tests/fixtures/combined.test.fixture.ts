@@ -6,8 +6,8 @@ export const test =  baseTest.extend<{
     apiManager: ApiManager;
     pageManager: PageManager;
 }>({
-    apiManager: async ({ request }, use) => {
-        const apiManager = new ApiManager(request);
+    apiManager: async ({ request }, use, testInfo) => {
+        const apiManager = new ApiManager(request, testInfo, baseTest);
         await use(apiManager);
     },
     pageManager: async ({ page, context }, use, testInfo) => {

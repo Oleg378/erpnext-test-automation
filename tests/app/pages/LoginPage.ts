@@ -8,7 +8,7 @@ export class LoginPage {
         this.manager = page;
     }
 
-    async loginAsAdmin() {
+    async loginAsAdmin(): Promise<HomePage> {
         await this.manager.fillInput('input#login_email', 'Administrator', 'fill log in email \'Administrator\'')
         await this.manager.fillInput('input#login_password', 'admin', 'fill in password \'admin\'')
 
