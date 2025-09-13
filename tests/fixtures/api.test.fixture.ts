@@ -5,8 +5,8 @@ import {ApiManager} from '../tools/ApiManager';
 export const apiTest = baseTest.extend<{
     apiManager: ApiManager;
 }>({
-    apiManager: async ({ request }, use) => {
-        const apiManager = new ApiManager(request);
+    apiManager: async ({ request }, use, testInfo) => {
+        const apiManager = new ApiManager(request, testInfo, baseTest);
         await use(apiManager);
     },
 });
