@@ -23,5 +23,5 @@ export const ProfileRoles = {
     Inventory: {
         role_profile_name: 'Inventory',
         new_password: 'I123456@!'
-    }
+    } as ProfileRole
 }  as const;
