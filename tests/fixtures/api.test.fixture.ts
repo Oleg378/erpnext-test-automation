@@ -1,5 +1,5 @@
 import { test as baseTest } from '@playwright/test';
-import {ApiManager} from '../tools/ApiManager';
+import {ApiManager} from '../tools/manager/ApiManager';
 
 
 export const apiTest = baseTest.extend<{

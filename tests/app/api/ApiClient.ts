@@ -1,4 +1,4 @@
-import {ApiManager} from '../../tools/ApiManager';
+import {ApiManager} from '../../tools/manager/ApiManager';
 import {ProfileRole} from '../../tools/ProfileRoles';
 import {TestDataFactory} from '../../tools/TestDataFactory';
 
@@ -9,8 +9,8 @@ export class ApiClient {
 
     static async postRetrieveAdminCookies(apiManager: ApiManager): Promise<void> {
         const data = {
-            'usr': 'Administrator',
-            'pwd': 'admin'
+            usr: 'Administrator',
+            pwd: 'admin'
         }
         await apiManager.post('/api/method/login', data);
     }

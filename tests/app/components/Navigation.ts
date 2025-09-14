@@ -1,5 +1,5 @@
 import {BasePage} from '../pages/navigation/BasePage';
-import {PageManager} from '../../tools/PageManager';
+import {PageManager} from '../../tools/manager/PageManager';
 import {HomePage} from '../pages/navigation/HomePage';
 import {AccountingPage} from '../pages/navigation/AccountingPage';
 import {PayablesPage} from '../pages/navigation/PayablesPage';

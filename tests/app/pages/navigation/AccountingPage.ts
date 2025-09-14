@@ -1,5 +1,5 @@
 import {BasePage} from './BasePage';
-import {PageManager} from '../../../tools/PageManager';
+import {PageManager} from '../../../tools/manager/PageManager';
 
 export class AccountingPage extends BasePage {
     constructor(manager: PageManager) {

@@ -1,4 +1,4 @@
-import {PageManager} from '../../../tools/PageManager';
+import {PageManager} from '../../../tools/manager/PageManager';
 import {NavigationTarget} from '../../components/Navigation';
 
 export class BasePage {
