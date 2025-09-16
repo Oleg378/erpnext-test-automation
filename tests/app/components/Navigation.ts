@@ -1,4 +1,4 @@
-import {BasePage} from '../pages/navigation/BasePage';
+import {AbstractNavigationPage} from '../pages/navigation/AbstractNavigationPage';
 import {PageManager} from '../../tools/manager/PageManager';
 import {HomePage} from '../pages/navigation/HomePage';
 import {AccountingPage} from '../pages/navigation/AccountingPage';
@@ -6,7 +6,7 @@ import {PayablesPage} from '../pages/navigation/PayablesPage';
 import {SellingPage} from '../pages/navigation/SellingPage';
 import {StockPage} from '../pages/navigation/StockPage';
 
-export interface NavigationTarget<T extends BasePage = BasePage> {
+export interface NavigationTarget<T extends AbstractNavigationPage> {
     readonly button: string;
     readonly visibleElement: string;
     readonly returnType: new (page: PageManager) => T;

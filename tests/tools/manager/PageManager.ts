@@ -61,7 +61,7 @@ export class PageManager extends ReportManager {
         await this.page.waitForTimeout(number);
     }
 
-    async getSessionContext(userRole: ProfileRole): Promise<SessionContext> {
+    async generateSessionContext(userRole: ProfileRole): Promise<SessionContext> {
         return new SessionContext(
             userRole,
             await this.context.storageState({indexedDB: true})
@@ -69,7 +69,7 @@ export class PageManager extends ReportManager {
     }
 
     async restoreBrowserContext(context: SessionContext): Promise<void> {
-        await this.close();
+        await this.page.close();
         this.context = await this.browser.newContext({storageState: context.storageState });
         this.page = await this.context.newPage();
         await this.gotoHome();

@@ -37,8 +37,8 @@ export class ApiClient {
         enableSteps: boolean = true,
         username?: string
     ): Promise<string>  {
-        const baseUsername = username || await TestDataFactory.generateUsername();
-        const finalUsername = `${profileRole.role_profile_name}${baseUsername}`;
+        const baseUsername = await TestDataFactory.generateUsername();
+        const finalUsername = username || `${profileRole.role_profile_name}${baseUsername}`;
         const email = `${finalUsername}@example.com`;
         const data = {
             email: email,
@@ -52,7 +52,10 @@ export class ApiClient {
         const response = await apiManager.post(
             '/api/resource/User',
             data,
-            `Create a new user: ${email}`, enableSteps);
+            `Get or Create a new user: ${email}`, enableSteps);
+        if (response.status() === 409) {
+            return email;
+        }
         await apiManager.expectResponseToBeOk(response);
         return email;
     }

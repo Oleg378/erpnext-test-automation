@@ -1,7 +1,7 @@
-import {BasePage} from './BasePage';
+import {AbstractNavigationPage} from './AbstractNavigationPage';
 import {PageManager} from '../../../tools/manager/PageManager';
 
-export class AccountingPage extends BasePage {
+export class AccountingPage extends AbstractNavigationPage {
     constructor(manager: PageManager) {
         super(manager);
     }
