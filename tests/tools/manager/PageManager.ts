@@ -1,16 +1,20 @@
 import {Page, BrowserContext, TestInfo, TestType, Locator, expect} from '@playwright/test';
 import {ReportManager} from './ReportManager';
+import {SessionContext} from '../SessionContext';
+import {ProfileRole} from '../ProfileRoles';
+import {Browser} from 'playwright';
 
 export class PageManager extends ReportManager {
     protected page: Page;
     protected context: BrowserContext;
-
+    protected browser: Browser;
     private static readonly WAIT_MS = 10_000;
 
-    constructor(page: Page, context: BrowserContext, testInfo: TestInfo, test: TestType<any, any>) {
+    constructor(page: Page, context: BrowserContext, browser: Browser, testInfo: TestInfo, test: TestType<any, any>) {
         super(testInfo, test);
         this.page = page;
         this.context = context;
+        this.browser = browser;
         this.testInfo = testInfo;
         this.test = test;
     }
@@ -20,7 +24,7 @@ export class PageManager extends ReportManager {
     }
 
     async gotoHome(): Promise<void> {
-        await this.page.goto('/');
+        await this.page.goto('/app');
     }
 
     async click(selector: string, description?: string): Promise<void> {
@@ -55,6 +59,27 @@ export class PageManager extends ReportManager {
 
     async wait(number: number): Promise<void> {
         await this.page.waitForTimeout(number);
+    }
+
+    async getSessionContext(userRole: ProfileRole): Promise<SessionContext> {
+        return new SessionContext(
+            userRole,
+            await this.context.storageState({indexedDB: true})
+        );
+    }
+
+    async restoreBrowserContext(context: SessionContext): Promise<void> {
+        await this.close();
+        this.context = await this.browser.newContext({storageState: context.storageState });
+        this.page = await this.context.newPage();
+        await this.gotoHome();
+    }
+
+    async close() {
+        if (this.context) {
+            await this.page.close();
+            await this.context.close();
+        }
     }
 
     async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {

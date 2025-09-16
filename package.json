@@ -6,6 +6,7 @@
   "scripts": {
     "test": "playwright test --project=chromium",
     "test:report": "npm test && allure generate allure-results -o allure-report",
+    "test:sessions": "playwright test --project=chromium -g @sessions && allure generate allure-results -o allure-report",
     "report": "allure serve allure-results",
     "trace": "playwright show-trace"
   },

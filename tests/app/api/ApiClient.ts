@@ -7,15 +7,23 @@ export class ApiClient {
         throw Error('ApiClient instances are not allowed!');
     }
 
-    static async postRetrieveAdminCookies(apiManager: ApiManager): Promise<void> {
+    static async postRetrieveAdminCookies(
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<void> {
         const data = {
             usr: 'Administrator',
             pwd: 'admin'
         }
-        await apiManager.post('/api/method/login', data);
+        await apiManager.post(
+            '/api/method/login',
+            data, 'Retrieve admin data',
+            enableSteps);
     }
 
-    static async getListOfCustomers(apiManager: ApiManager): Promise<void> {
+    static async getListOfCustomers(
+        apiManager: ApiManager
+    ): Promise<void> {
         const response = await apiManager.get('/api/resource/Customer');
         await apiManager.expectResponseToBeOk(response);
         const buffer: Buffer = await response.body();
@@ -23,11 +31,17 @@ export class ApiClient {
         await apiManager.attachDataToReport('Existing customers: ', responseBody)
     }
 
-    static async postCreateNewUser(apiManager: ApiManager, profileRole: ProfileRole, username?: string): Promise<string>  {
+    static async postCreateNewUser(
+        apiManager: ApiManager,
+        profileRole: ProfileRole,
+        enableSteps: boolean = true,
+        username?: string
+    ): Promise<string>  {
         const baseUsername = username || await TestDataFactory.generateUsername();
         const finalUsername = `${profileRole.role_profile_name}${baseUsername}`;
+        const email = `${finalUsername}@example.com`;
         const data = {
-            email: `${finalUsername}@example.com`,
+            email: email,
             first_name: 'John',
             last_name: 'Smith',
             username: finalUsername,
@@ -35,8 +49,11 @@ export class ApiClient {
             send_welcome_email: 0,
             role_profile_name: profileRole.role_profile_name
         };
-        const response = await apiManager.post('/api/resource/User', data);
+        const response = await apiManager.post(
+            '/api/resource/User',
+            data,
+            `Create a new user: ${email}`, enableSteps);
         await apiManager.expectResponseToBeOk(response);
-        return finalUsername;
+        return email;
     }
 }
