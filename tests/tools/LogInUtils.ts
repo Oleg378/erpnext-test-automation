@@ -18,7 +18,7 @@ export class LogInUtils {
     ): Promise<{homepage: HomePage, userEmail: string}> {
         await ApiClient.postRetrieveAdminCookies(apiManager);
         const userEmail = await ApiClient.postCreateNewUser(apiManager, role, true, username);
-        const homepage: HomePage = await new LoginPage(pageManager).login(userEmail, role);
+        const homepage: HomePage = await new LoginPage(pageManager).loginOrRestoreSession(userEmail, role);
 
         return {homepage: homepage, userEmail: userEmail};
     }

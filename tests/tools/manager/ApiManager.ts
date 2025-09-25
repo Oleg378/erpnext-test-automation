@@ -6,6 +6,11 @@ interface ApiResponse {
     body(): Promise<Buffer>;
 }
 
+export interface ApiOptions {
+    enableSteps?: boolean;
+    description?: string;
+}
+
 export class ApiManager extends ReportManager {
     protected request: APIRequestContext;
 
@@ -16,13 +21,12 @@ export class ApiManager extends ReportManager {
 
     async get(
         endpoint: string,
-        description?: string,
-        enableSteps: boolean = true
+        options: ApiOptions = {enableSteps: true}
     ): Promise<APIResponse> {
-        if (!enableSteps) {
+        if (!options.enableSteps) {
             return this.request.get(endpoint);
         }
-        return this.withStep(description || `GET ${endpoint}`, () => {
+        return this.withStep(options.description || `GET ${endpoint}`, () => {
             return this.request.get(endpoint);
         });
     }
@@ -30,13 +34,12 @@ export class ApiManager extends ReportManager {
     async post(
         endpoint: string,
         data: Serializable,
-        description?: string,
-        enableSteps: boolean = true
+        options: ApiOptions = {enableSteps: true}
     ): Promise<APIResponse> {
-        if (!enableSteps) {
+        if (!options.enableSteps) {
             return this.request.post(endpoint, { data });
         }
-        return this.withStep(description || `POST ${endpoint}`, async () => {
+        return this.withStep(options.description || `POST ${endpoint}`, async () => {
             return this.request.post(endpoint, { data });
         });
     }
@@ -44,9 +47,9 @@ export class ApiManager extends ReportManager {
     async put(
         endpoint: string,
         data: any,
-        enableSteps: boolean = true
+        options: ApiOptions = {enableSteps: true}
     ): Promise<APIResponse> {
-        if (!enableSteps) {
+        if (!options.enableSteps) {
             return this.request.put(endpoint, { data });
         }
         return this.withStep(`PUT ${endpoint}`, async () => {
@@ -56,9 +59,9 @@ export class ApiManager extends ReportManager {
 
     async delete(
         endpoint: string,
-        enableSteps: boolean = true
+        options: ApiOptions = {enableSteps: true}
     ): Promise<APIResponse> {
-        if (!enableSteps) {
+        if (!options.enableSteps) {
             return this.request.delete(endpoint);
         }
         return this.withStep(`DELETE ${endpoint}`, async () => {

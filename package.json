@@ -7,6 +7,8 @@
     "test": "playwright test --project=chromium",
     "test:report": "npm test && allure generate allure-results -o allure-report",
     "test:sessions": "playwright test --project=chromium -g @sessions && allure generate allure-results -o allure-report",
+    "test:api": "playwright test --project=chromium -g @api && allure generate allure-results -o allure-report",
+    "test:setup": "playwright test --project=chromium -g @setup && allure generate allure-results -o allure-report",
     "report": "allure serve allure-results",
     "trace": "playwright show-trace"
   },
@@ -23,14 +25,15 @@
   },
   "homepage": "https://github.com/Oleg378/erpnext-test-automation#readme",
   "dependencies": {
-    "playwright": "^1.54.2",
     "@playwright/test": "^1.54.2",
-    "allure-commandline": "^2.34.1",
-    "allure-playwright": "^3.3.3",
     "@types/node": "^24.3.0",
-    "typescript": "^5.9.2",
-    "ts-node": "^10.9.2",
+    "allure-commandline": "^2.34.1",
     "allure-js-commons": "^3.3.3",
-    "dotenv": "^16.4.5"
+    "allure-playwright": "^3.3.3",
+    "dotenv": "^16.4.5",
+    "playwright": "^1.54.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "zod": "^4.1.11"
   }
 }
