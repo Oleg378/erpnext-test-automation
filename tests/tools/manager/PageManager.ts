@@ -8,7 +8,7 @@ export class PageManager extends ReportManager {
     protected page: Page;
     protected context: BrowserContext;
     protected browser: Browser;
-    private static readonly WAIT_MS = 10_000;
+    private static readonly WAIT_MS = 30_000;
 
     constructor(page: Page, context: BrowserContext, browser: Browser, testInfo: TestInfo, test: TestType<any, any>) {
         super(testInfo, test);
