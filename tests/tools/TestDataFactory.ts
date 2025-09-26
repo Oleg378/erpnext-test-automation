@@ -1,4 +1,4 @@
-export class TestDataFactory {
+export abstract class TestDataFactory {
     public static readonly SUPER_ADMIN_CREDENTIALS = {
         email: 'Administrator',
         password: 'admin'
@@ -12,10 +12,6 @@ export class TestDataFactory {
         name: 'Main Test Company Inc.',
         abbreviation: 'TEST'
     };
-
-    private constructor() {
-        throw Error('TestDataFactory instances are not allowed!');
-    }
 
     static generateBaseUsername(): string {
         return Date.now().toString()

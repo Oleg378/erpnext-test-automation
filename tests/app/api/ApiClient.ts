@@ -3,10 +3,7 @@ import {ProfileRole} from '../../tools/ProfileRoles';
 import {TestDataFactory} from '../../tools/TestDataFactory';
 import { z } from 'zod';
 
-export class ApiClient {
-    private constructor() {
-        throw Error('ApiClient instances are not allowed!');
-    }
+export abstract class ApiClient {
 
     static async postRetrieveAdminCookies(
         apiManager: ApiManager,

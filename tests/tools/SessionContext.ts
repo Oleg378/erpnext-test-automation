@@ -7,12 +7,8 @@ export class SessionContext {
     ) {}
 }
 
-export class SessionContextStorage {
+export abstract class SessionContextStorage {
     protected static storage: Map<string, SessionContext> = new Map();
-
-    private constructor() {
-        throw Error('ApiClient instances are not allowed!');
-    }
 
     static putUserSession(username: string, sessionContext: SessionContext): void {
         if (!SessionContextStorage.hasUserSession(username)) {

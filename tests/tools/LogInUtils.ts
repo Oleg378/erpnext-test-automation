@@ -5,10 +5,7 @@ import {PageManager} from './manager/PageManager';
 import {ApiClient} from '../app/api/ApiClient';
 import {LoginPage} from '../app/pages/LoginPage';
 
-export class LogInUtils {
-    private constructor() {
-        throw  new Error('LogInUtils instances are not allowed!');
-    }
+export abstract class LogInUtils {
 
     static async ensureUserLoggedIn(
         apiManager: ApiManager,
