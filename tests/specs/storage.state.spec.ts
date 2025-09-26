@@ -3,12 +3,11 @@ import {ApiClient} from '../app/api/ApiClient';
 import {ProfileRole, ProfileRoles} from '../tools/ProfileRoles';
 import {LogInUtils} from '../tools/LogInUtils';
 
-let username: string
 const profileRole: ProfileRole = ProfileRoles.Accounts
 
 test.beforeAll(async ({apiManager}) => {
     await ApiClient.postRetrieveAdminCookies(apiManager);
-    username = await ApiClient.postCreateNewUser(apiManager, profileRole, false);
+    await ApiClient.postCreateNewUser(apiManager, profileRole, false);
 });
 
 test.describe('RESTORE SESSION DEMO: @sessions', () => {

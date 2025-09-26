@@ -46,7 +46,7 @@ export class ApiManager extends ReportManager {
 
     async put(
         endpoint: string,
-        data: any,
+        data: Serializable,
         options: ApiOptions = {enableSteps: true}
     ): Promise<APIResponse> {
         if (!options.enableSteps) {
