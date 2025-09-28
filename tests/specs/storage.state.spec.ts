@@ -1,14 +1,8 @@
 import {test} from '../fixtures/combined.test.fixture';
-import {ApiClient} from '../app/api/ApiClient';
 import {ProfileRole, ProfileRoles} from '../tools/ProfileRoles';
 import {LogInUtils} from '../tools/LogInUtils';
 
 const profileRole: ProfileRole = ProfileRoles.Accounts
-
-test.beforeAll(async ({apiManager}) => {
-    await ApiClient.postRetrieveAdminCookies(apiManager);
-    await ApiClient.postCreateNewUser(apiManager, profileRole, false);
-});
 
 test.describe('RESTORE SESSION DEMO: @sessions', () => {
     test.describe.configure({ mode: 'serial' });
