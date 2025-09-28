@@ -2,9 +2,22 @@ import {ApiManager} from '../../tools/manager/ApiManager';
 import {ProfileRole} from '../../tools/ProfileRoles';
 import {TestDataFactory} from '../../tools/TestDataFactory';
 import { z } from 'zod';
+import {ItemGroupEnum} from '../../tools/stock-utils/ItemGroupEnum';
+import {UOMEnum} from '../../tools/stock-utils/UOMEnum';
+
+export interface Customer {
+    customer_name: string,
+    customer_type: string
+}
+
+export interface Item {
+    item_code: string, // uid, in the
+    item_name: string,
+    item_group: ItemGroupEnum,
+    stock_uom: UOMEnum
+}
 
 export abstract class ApiClient {
-
     static async postRetrieveAdminCookies(
         apiManager: ApiManager,
         enableSteps: boolean = true
@@ -68,8 +81,62 @@ export abstract class ApiClient {
         await apiManager.expectResponseToBeOk(response);
         return data;
     }
+    static async postCreateNewCustomer(
+        customer_name: string = '',
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<Customer> {
+        const final_name: string = customer_name.length === 0 ? `Customer${TestDataFactory.generateBaseUsername()}` : customer_name;
+        const data: Customer = {
+            customer_name: final_name,
+            customer_type: 'Company' // should be enum
+        }
+        const responseSchema = z.object({
+            data: z.object({
+                name: z.string(),
+                customer_name: z.string(),
+                customer_type: z.string(),
+                doctype: z.string(),
+            })
+        });
+        const response = await apiManager.post(
+            '/api/resource/Customer',
+            data,
+            {enableSteps: enableSteps, description: 'Create a new Customer'}
+        );
+        await apiManager.expectResponseToBeOk(response);
+        const parsedData = responseSchema.parse(await response.json())
+        const customer: Customer = {customer_name: parsedData.data.customer_name, customer_type: parsedData.data.customer_type};
+        await apiManager.attachDataToReport('list of customers:', JSON.stringify(customer))
+        return customer;
+    }
 
-    static async getListOfCompanies(
+    static async postCreateNewItem(
+        item: Item,
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<Item> {
+        const data = {
+            item_code: item.item_code,
+            item_name: item.item_name,
+            item_group: item.item_group,
+            stock_uom: item.stock_uom,
+            is_stock_item: 1,
+            is_purchase_item: 1
+        }
+        const response = await apiManager.post(
+            '/api/resource/Item',
+            data,
+            {enableSteps: enableSteps, description: 'Create a new Item'}
+        );
+        await apiManager.expectResponseToBeOk(response);
+        await apiManager.attachDataToReport('New item has been created: ', JSON.stringify(item))
+        return item;
+    }
+
+    private static async getAllRecords(
+        endpoint: string,
+        recordName: string,
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<string[]> {
@@ -81,35 +148,48 @@ export abstract class ApiClient {
             )
         });
         const response = await apiManager.get(
-            '/api/resource/Company',
-            {enableSteps: enableSteps, description: 'Get a list of all companies'}
+            endpoint,
+            {enableSteps: enableSteps, description: `Get a list of all ${recordName}`}
         );
         await apiManager.expectResponseToBeOk(response);
         const parsedData = responseSchema.parse(await response.json())
-        const listOfCompanies: string[] = parsedData.data.map(company => company.name);
-        await apiManager.attachDataToReport('list of companies:', listOfCompanies.toString())
-        return listOfCompanies;
+        const listOfRecords: string[] = parsedData.data.map(record => record.name);
+        await apiManager.attachDataToReport(`list of ${recordName}:`, JSON.stringify(listOfRecords))
+        return listOfRecords;
+    }
+
+    static async getListOfCompanies(
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<string[]> {
+        return ApiClient.getAllRecords(
+            '/api/resource/Company',
+            'Companies',
+            apiManager,
+            enableSteps);
     }
 
     static async getListOfCustomers(
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<string[]> {
-        const responseSchema = z.object({
-            data: z.array(
-                z.object({
-                    name: z.string()
-                })
-            )
-        });
-        const response = await apiManager.get(
+        return ApiClient.getAllRecords(
             '/api/resource/Customer',
-            {enableSteps: enableSteps, description: 'Get a list of all customers'}
+            'Customers',
+            apiManager,
+            enableSteps
         );
-        await apiManager.expectResponseToBeOk(response);
-        const parsedData = responseSchema.parse(await response.json())
-        const listOfCustomers: string[] = parsedData.data.map(customer => customer.name);
-        await apiManager.attachDataToReport('list of companies:', listOfCustomers.toString())
-        return listOfCustomers;
+    }
+
+    static async getListOfItems(
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<string[]> {
+        return ApiClient.getAllRecords(
+            '/api/resource/Item',
+            'Items',
+            apiManager,
+            enableSteps
+        );
     }
 }
