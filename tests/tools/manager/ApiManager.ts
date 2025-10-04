@@ -1,6 +1,7 @@
 import {APIRequestContext, APIResponse, expect, TestInfo, TestType} from '@playwright/test';
 import {ReportManager} from './ReportManager';
 import {Serializable} from 'playwright-core/types/structs';
+import {z} from 'zod';
 
 interface ApiResponse {
     body(): Promise<Buffer>;
@@ -24,11 +25,32 @@ export class ApiManager extends ReportManager {
         options: ApiOptions = {enableSteps: true}
     ): Promise<APIResponse> {
         if (!options.enableSteps) {
-            return this.request.get(endpoint);
+            return this.request.get(endpoint, { params: { limit: 1000 } });
         }
         return this.withStep(options.description || `GET ${endpoint}`, () => {
-            return this.request.get(endpoint);
+            return this.request.get(endpoint, { params: { limit: 1000 } });
         });
+    }
+
+    async getAllRecords(
+        endpoint: string,
+        recordName: string,
+        enableSteps: boolean = true
+    ): Promise<string[]> {
+        const responseSchema = z.object({
+            data: z.array(
+                z.object({
+                    name: z.string()
+                })
+            )
+        });
+        const response = await this.get(
+            endpoint,
+            {enableSteps: enableSteps, description: `Get a list of all ${recordName}`}
+        );
+        await this.expectResponseToBeOk(response);
+        const parsedData = responseSchema.parse(await response.json())
+        return parsedData.data.map(record => record.name);
     }
 
     async post(
@@ -42,6 +64,22 @@ export class ApiManager extends ReportManager {
         return this.withStep(options.description || `POST ${endpoint}`, async () => {
             return this.request.post(endpoint, { data });
         });
+    }
+
+    async postCreateRecord<T>(
+        endpoint: string,
+        recordName: string,
+        record: T,
+        enableSteps: boolean = true
+    ): Promise<{ request_body: T; response_body: Serializable }> {
+        const response = await this.post(
+            endpoint,
+            record,
+            { enableSteps, description: `Create a new ${recordName}` }
+        );
+        await this.expectResponseToBeOk(response);
+        const responseBody = await response.json();
+        return { request_body: record, response_body: responseBody };
     }
 
     async put(
@@ -70,7 +108,7 @@ export class ApiManager extends ReportManager {
     }
 
     async expectResponseToBeOk(response: APIResponse): Promise<void> {
-        return expect(response).toBeOK()
+        return expect(response, 'Response Code should be 200-299').toBeOK()
     }
 
     // Helper method to process response body

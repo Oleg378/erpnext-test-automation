@@ -4,6 +4,8 @@ import {ApiManager} from './manager/ApiManager';
 import {PageManager} from './manager/PageManager';
 import {ApiClient} from '../app/api/ApiClient';
 import {LoginPage} from '../app/pages/LoginPage';
+import {TestDataFactory} from './TestDataFactory';
+import {User} from './record-types';
 
 export abstract class LogInUtils {
 
@@ -13,10 +15,14 @@ export abstract class LogInUtils {
         role: ProfileRole,
         username?: string
     ): Promise<{homepage: HomePage, userEmail: string}> {
+        const user: User = TestDataFactory.generateUserInfo(role, username);
         await ApiClient.postRetrieveAdminCookies(apiManager);
-        const userEmail = await ApiClient.postCreateNewUser(apiManager, role, true, username);
-        const homepage: HomePage = await new LoginPage(pageManager).loginOrRestoreSession(userEmail, role);
+        const registeredUsers: string[] = await ApiClient.getListOfUsers(apiManager);
+        if(!registeredUsers.includes(user.email)) {
+            await ApiClient.postCreateNewUser(user, apiManager);
+        }
+        const homepage: HomePage = await new LoginPage(pageManager).loginOrRestoreSession(user.email, role);
 
-        return {homepage: homepage, userEmail: userEmail};
+        return {homepage: homepage, userEmail: user.email};
     }
 }

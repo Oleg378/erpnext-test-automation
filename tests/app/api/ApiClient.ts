@@ -1,21 +1,18 @@
 import {ApiManager} from '../../tools/manager/ApiManager';
-import {ProfileRole} from '../../tools/ProfileRoles';
 import {TestDataFactory} from '../../tools/TestDataFactory';
-import { z } from 'zod';
-import {ItemGroupEnum} from '../../tools/stock-utils/ItemGroupEnum';
-import {UOMEnum} from '../../tools/stock-utils/UOMEnum';
-
-export interface Customer {
-    customer_name: string,
-    customer_type: string
-}
-
-export interface Item {
-    item_code: string, // uid, in the
-    item_name: string,
-    item_group: ItemGroupEnum,
-    stock_uom: UOMEnum
-}
+import {expect} from '@playwright/test';
+import {
+    Company,
+    COMPANY_RESPONSE_SCHEMA,
+    Customer,
+    CUSTOMER_RESPONSE_SCHEMA,
+    Item,
+    ITEM_RESPONSE_SCHEMA,
+    Supplier,
+    SUPPLIER_RESPONSE_SCHEMA,
+    User,
+    USER_RESPONSE_SCHEMA
+} from '../../tools/record-types';
 
 export abstract class ApiClient {
     static async postRetrieveAdminCookies(
@@ -33,82 +30,94 @@ export abstract class ApiClient {
     }
 
     static async postCreateNewUser(
+        user: User,
         apiManager: ApiManager,
-        profileRole: ProfileRole,
         enableSteps: boolean = true,
-        username?: string
-    ): Promise<string>  {
-        const baseUsername = TestDataFactory.generateBaseUsername();
-        const finalUsername = username || `${profileRole.role_profile_name}${baseUsername}`;
-        const email = `${finalUsername}@example.com`;
-        const data = {
-            email: email,
-            first_name: 'John',
-            last_name: 'Smith',
-            username: finalUsername,
-            new_password: profileRole.new_password,
-            send_welcome_email: 0,
-            role_profile_name: profileRole.role_profile_name
-        };
-        const response = await apiManager.post(
+    ): Promise<User>  {
+        const result = await apiManager.postCreateRecord(
             '/api/resource/User',
-            data,
-            {enableSteps: enableSteps, description: `Get or Create a new user: ${email}`}
-        );
-        if (response.status() === 409) {
-            await apiManager.attachDataToReport(`User already exists!`, email);
-            return email;
-        }
-        await apiManager.expectResponseToBeOk(response);
-        await apiManager.attachDataToReport(`New user with profileRole ${data.role_profile_name} has been created!`, email);
-        return email;
+            'User',
+            user,
+            enableSteps
+        )
+        const parsedResponse = USER_RESPONSE_SCHEMA.parse(result.response_body);
+
+        expect(
+            parsedResponse.data.name,
+            '"name" should equal "email"'
+        ).toBe(parsedResponse.data.email);
+        expect(
+            parsedResponse.data.first_name,
+            `"first_name" should equal "${result.request_body.first_name}"`
+        ).toBe(result.request_body.first_name);
+        expect(
+            parsedResponse.data.last_name,
+            `"last_name" should equal "${result.request_body.last_name}"`
+        ).toBe(result.request_body.last_name);
+        expect(
+            parsedResponse.data.role_profile_name,
+            `"role_profile_name" should equal "${result.request_body.role_profile_name}"`
+        ).toBe(result.request_body.role_profile_name);
+
+        return user;
     }
 
     static async postCreateNewCompany(
+        company: Company,
         apiManager: ApiManager,
         enableSteps: boolean = true
-    ): Promise<{company_name: string, abbr: string, default_currency: string, country: string}> {
-        const data = {
-            company_name: TestDataFactory.generateCompanyName(),
-            abbr: TestDataFactory.generateCompanyAbbreviation(),
-            default_currency: 'ILS', // should be enum
-            country: 'Israel' // should be enum
-        }
-        const response = await apiManager.post(
+    ): Promise<Company> {
+        const result = await apiManager.postCreateRecord(
             '/api/resource/Company',
-            data,
-            {enableSteps: enableSteps, description: 'Create a new company'});
-        await apiManager.expectResponseToBeOk(response);
-        return data;
+            'Company',
+            company,
+            enableSteps
+        );
+        const parsedResponse = COMPANY_RESPONSE_SCHEMA.parse(result.response_body);
+
+        expect(
+            parsedResponse.data.name,
+            '"name" should equal "company_name"'
+        ).toBe(parsedResponse.data.company_name);
+        expect(
+            parsedResponse.data.company_name,
+            `"company_name" should equal "${result.request_body.company_name}"`
+        ).toBe(result.request_body.company_name);
+        expect(
+            parsedResponse.data.abbr,
+            `"abbr" should equal "${result.request_body.abbr}"`
+        ).toBe(result.request_body.abbr);
+
+        return company;
     }
+
     static async postCreateNewCustomer(
-        customer_name: string = '',
+        customer: Customer,
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<Customer> {
-        const final_name: string = customer_name.length === 0 ? `Customer${TestDataFactory.generateBaseUsername()}` : customer_name;
-        const data: Customer = {
-            customer_name: final_name,
-            customer_type: 'Company' // should be enum
-        }
-        const responseSchema = z.object({
-            data: z.object({
-                name: z.string(),
-                customer_name: z.string(),
-                customer_type: z.string(),
-                doctype: z.string(),
-            })
-        });
-        const response = await apiManager.post(
+        const result = await apiManager.postCreateRecord(
             '/api/resource/Customer',
-            data,
-            {enableSteps: enableSteps, description: 'Create a new Customer'}
+            'Customer',
+            customer,
+            enableSteps
         );
-        await apiManager.expectResponseToBeOk(response);
-        const parsedData = responseSchema.parse(await response.json())
-        const customer: Customer = {customer_name: parsedData.data.customer_name, customer_type: parsedData.data.customer_type};
-        await apiManager.attachDataToReport('list of customers:', JSON.stringify(customer))
-        return customer;
+        const parsedResponse = CUSTOMER_RESPONSE_SCHEMA.parse(result.response_body);
+
+        expect(
+            parsedResponse.data.name,
+            '"name" should equal "customer_name"'
+        ).toBe(parsedResponse.data.customer_name)
+        expect(
+            parsedResponse.data.customer_name,
+            `"customer_name" should equal "${result.request_body.customer_name}"`
+        ).toBe(result.request_body.customer_name)
+        expect(
+            parsedResponse.data.customer_type,
+            `"supplier_type" should be "${result.request_body.customer_type}"`
+        ).toBe(result.request_body.customer_type);
+
+        return  customer;
     }
 
     static async postCreateNewItem(
@@ -116,56 +125,74 @@ export abstract class ApiClient {
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<Item> {
-        const data = {
-            item_code: item.item_code,
-            item_name: item.item_name,
-            item_group: item.item_group,
-            stock_uom: item.stock_uom,
-            is_stock_item: 1,
-            is_purchase_item: 1
-        }
-        const response = await apiManager.post(
+        const result = await apiManager.postCreateRecord(
             '/api/resource/Item',
-            data,
-            {enableSteps: enableSteps, description: 'Create a new Item'}
+            'Item',
+            item,
+            enableSteps
         );
-        await apiManager.expectResponseToBeOk(response);
-        await apiManager.attachDataToReport('New item has been created: ', JSON.stringify(item))
+        const parsedResponse = ITEM_RESPONSE_SCHEMA.parse(result.response_body);
+
+        expect(
+            parsedResponse.data.name,
+            '"name" should equal "item_code"'
+        ).toBe(parsedResponse.data.item_code);
+        expect(
+            parsedResponse.data.item_code,
+            `"item_code" should be ${result.request_body.item_code}`
+        ).toBe(result.request_body.item_code);
+        expect(
+            parsedResponse.data.item_name,
+            `"item_name" should be ${result.request_body.item_name}`
+        ).toBe(result.request_body.item_name);
+        expect(
+            parsedResponse.data.item_group,
+            `"item_group" should be ${result.request_body.item_group}`
+        ).toBe(result.request_body.item_group);
+        expect(
+            parsedResponse.data.stock_uom,
+            `"stock_uom" should be ${result.request_body.stock_uom}`
+        ).toBe(result.request_body.stock_uom);
+
         return item;
     }
 
-    private static async getAllRecords(
-        endpoint: string,
-        recordName: string,
+    static async postCreateNewSupplier(
+        supplier: Supplier,
         apiManager: ApiManager,
         enableSteps: boolean = true
-    ): Promise<string[]> {
-        const responseSchema = z.object({
-            data: z.array(
-                z.object({
-                    name: z.string()
-                })
-            )
-        });
-        const response = await apiManager.get(
-            endpoint,
-            {enableSteps: enableSteps, description: `Get a list of all ${recordName}`}
+    ): Promise<Supplier> {
+        const result = await apiManager.postCreateRecord(
+             '/api/resource/Supplier',
+             'Supplier',
+             supplier,
+            enableSteps
         );
-        await apiManager.expectResponseToBeOk(response);
-        const parsedData = responseSchema.parse(await response.json())
-        const listOfRecords: string[] = parsedData.data.map(record => record.name);
-        await apiManager.attachDataToReport(`list of ${recordName}:`, JSON.stringify(listOfRecords))
-        return listOfRecords;
+        const parsedResponse = SUPPLIER_RESPONSE_SCHEMA.parse(result.response_body);
+
+        expect(
+            parsedResponse.data.supplier_name,
+            `"supplier_name" should be "${result.request_body.supplier_name}"`
+        ).toBe(result.request_body.supplier_name);
+        expect(
+            parsedResponse.data.name,
+            '"name" should equal "supplier_name"'
+        ).toBe(result.request_body.supplier_name);
+        expect(
+            parsedResponse.data.supplier_type,
+            '"supplier_type" should be "Company"'
+        ).toBe('Company');
+
+        return result.request_body;
     }
 
     static async getListOfCompanies(
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<string[]> {
-        return ApiClient.getAllRecords(
+        return apiManager.getAllRecords(
             '/api/resource/Company',
             'Companies',
-            apiManager,
             enableSteps);
     }
 
@@ -173,10 +200,9 @@ export abstract class ApiClient {
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<string[]> {
-        return ApiClient.getAllRecords(
+        return apiManager.getAllRecords(
             '/api/resource/Customer',
             'Customers',
-            apiManager,
             enableSteps
         );
     }
@@ -185,10 +211,31 @@ export abstract class ApiClient {
         apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<string[]> {
-        return ApiClient.getAllRecords(
+        return apiManager.getAllRecords(
             '/api/resource/Item',
             'Items',
-            apiManager,
+            enableSteps
+        );
+    }
+
+    static async getListOfSuppliers(
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<string[]> {
+        return apiManager.getAllRecords(
+            '/api/resource/Supplier',
+            'Suppliers',
+            enableSteps
+        );
+    }
+
+    static async getListOfUsers(
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<string[]> {
+        return apiManager.getAllRecords(
+            '/api/resource/User',
+            'Users',
             enableSteps
         );
     }

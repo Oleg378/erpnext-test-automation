@@ -1,3 +1,6 @@
+import {User} from './record-types';
+import {ProfileRole} from './ProfileRoles';
+
 export abstract class TestDataFactory {
     public static readonly SUPER_ADMIN_CREDENTIALS = {
         email: 'Administrator',
@@ -15,6 +18,21 @@ export abstract class TestDataFactory {
 
     static generateBaseUsername(): string {
         return Date.now().toString()
+    }
+
+    static generateUserInfo(role: ProfileRole, username?: string): User {
+        const baseUsername = TestDataFactory.generateBaseUsername();
+        const finalUsername = username || `${role.role_profile_name}${baseUsername}`;
+        const email = `${finalUsername.toLowerCase()}@example.com`;
+        return {
+            email: email,
+            first_name: 'John',
+            last_name: 'Smith',
+            username: finalUsername,
+            new_password: role.new_password,
+            send_welcome_email: 0,
+            role_profile_name: role.role_profile_name
+        }
     }
 
     static generateCompanyName(): string {
