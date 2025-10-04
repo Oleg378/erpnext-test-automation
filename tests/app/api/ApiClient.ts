@@ -239,4 +239,26 @@ export abstract class ApiClient {
             enableSteps
         );
     }
+
+    static async putUpdateItemSupplier(
+        item: Item,
+        supplier: Supplier,
+        apiManager: ApiManager,
+        enableSteps: boolean = true): Promise<Item> {
+        const record = {
+            supplier_items: [
+                {
+                    supplier: supplier.supplier_name
+                }
+            ]
+        }
+        const result = await apiManager.putUpdateRecord(`/api/resource/Item/${item.item_code}`, item.item_code, record, enableSteps);
+        const parsedResponse = ITEM_RESPONSE_SCHEMA.parse(result.response_body);
+        const suppliersNames: string[] = parsedResponse.data.supplier_items.map(record => record.supplier);
+        expect(
+            suppliersNames,
+            `Supplier "${supplier.supplier_name}" should be in the array of suppliers`
+        ).toContain(supplier.supplier_name);
+        return item;
+    }
 }

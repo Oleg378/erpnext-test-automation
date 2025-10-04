@@ -1,6 +1,6 @@
 export enum ItemGroupEnum {
-    'Consumable',
-    'Sub Assemblies',
-    'Raw Material',
-    'Products'
+    CONSUMABLE = 'Consumable',
+    SUB_ASSEMBLIES = 'Sub Assemblies',
+    RAW_MATERIAL = 'Raw Material',
+    PRODUCTS = 'Products'
 }

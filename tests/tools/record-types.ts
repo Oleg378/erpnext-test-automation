@@ -59,8 +59,11 @@ export const ITEM_RESPONSE_SCHEMA = z.object({
         item_name: z.string(),
         item_group: z.string(),
         stock_uom: z.string(),
-        is_stock_item: z.string(),
-        is_purchase_item: z.string()
+        is_stock_item: z.number(),
+        is_purchase_item: z.number(),
+        supplier_items: z.array(z.object({
+            supplier: z.string()
+        }))
     })
 });
 

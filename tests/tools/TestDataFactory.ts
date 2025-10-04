@@ -1,5 +1,7 @@
-import {User} from './record-types';
+import {Item, User} from './record-types';
 import {ProfileRole} from './ProfileRoles';
+import {ItemGroupEnum} from './stock-utils/ItemGroupEnum';
+import {UOMEnum} from './stock-utils/UOMEnum';
 
 export abstract class TestDataFactory {
     public static readonly SUPER_ADMIN_CREDENTIALS = {
@@ -16,12 +18,12 @@ export abstract class TestDataFactory {
         abbreviation: 'TEST'
     };
 
-    static generateBaseUsername(): string {
+    static generateUID(): string {
         return Date.now().toString()
     }
 
     static generateUserInfo(role: ProfileRole, username?: string): User {
-        const baseUsername = TestDataFactory.generateBaseUsername();
+        const baseUsername = TestDataFactory.generateUID();
         const finalUsername = username || `${role.role_profile_name}${baseUsername}`;
         const email = `${finalUsername.toLowerCase()}@example.com`;
         return {
@@ -33,6 +35,21 @@ export abstract class TestDataFactory {
             send_welcome_email: 0,
             role_profile_name: role.role_profile_name
         }
+    }
+
+    static generateItemInfo(
+        itemGroup: ItemGroupEnum,
+        uom: UOMEnum,
+        itemCode?: string,
+    ): Item {
+        return {
+            item_code: itemCode || `TEST-${TestDataFactory.generateUID()}`,
+            item_name: `Test Item`,
+            item_group: itemGroup,
+            stock_uom: uom,
+            is_stock_item: 1,
+            is_purchase_item: 1
+        };
     }
 
     static generateCompanyName(): string {

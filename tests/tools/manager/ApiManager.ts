@@ -95,6 +95,22 @@ export class ApiManager extends ReportManager {
         });
     }
 
+    async putUpdateRecord<T>(
+        endpoint: string,
+        recordName: string,
+        record: T,
+        enableSteps: boolean = true
+    ): Promise<{ request_body: T; response_body: Serializable }> {
+        const response = await this.put(
+            endpoint,
+            record,
+            { enableSteps, description: `Update ${recordName}` }
+        );
+        await this.expectResponseToBeOk(response);
+        const responseBody = await response.json();
+        return { request_body: record, response_body: responseBody };
+    }
+
     async delete(
         endpoint: string,
         options: ApiOptions = {enableSteps: true}

@@ -1,7 +1,7 @@
 export enum UOMEnum {
-    'Unit',
-    'Box',
-    'Meter',
-    'Kg',
-    'Cubic Meter'
+    UNIT = 'Unit',
+    BOX = 'Box',
+    METER = 'Meter',
+    KG = 'Kg',
+    CUBIC_METER = 'Cubic Meter'
 }
