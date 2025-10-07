@@ -53,6 +53,39 @@ export class ApiManager extends ReportManager {
         return parsedData.data.map(record => record.name);
     }
 
+    async isRecordExists(
+        endpoint: string,
+        recordName: string,
+        enableSteps: boolean = true
+    ): Promise<boolean> {
+        const response = await this.get(
+            `${endpoint}/${recordName}`,
+            {enableSteps: enableSteps}
+        );
+        return response.status() === 200;
+    }
+
+    async getListOf(
+        doctype: string,
+        fields: string[],
+        filters: Array<[string, string, any]>,
+        enableSteps: boolean = true
+    ): Promise<object> {
+        const data = {
+            doctype: doctype,
+            fields: fields,
+            filters: filters,
+            limit: 20
+        };
+        const response = await this.post(
+            '/api/method/frappe.client.get_list',
+            data,
+            {enableSteps: enableSteps, description: `Get a list of ${doctype}`}
+            );
+        await this.expectResponseToBeOk(response)
+        return response.json()
+    }
+
     async post(
         endpoint: string,
         data: Serializable,

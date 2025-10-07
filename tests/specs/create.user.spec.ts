@@ -1,7 +1,7 @@
 import {apiTest} from '../fixtures/api.test.fixture';
 import {ApiClient} from '../app/api/ApiClient';
 import {ProfileRoles} from '../tools/ProfileRoles';
-import {TestDataFactory} from '../tools/TestDataFactory';
+import {TestDataFactory} from '../tools/utils/TestDataFactory';
 
 apiTest.describe('Create new users with different roles: @sanity @api', () => {
     Object.values(ProfileRoles).forEach(role => {

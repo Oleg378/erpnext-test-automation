@@ -1,7 +1,7 @@
 import {Item, User} from './record-types';
-import {ProfileRole} from './ProfileRoles';
-import {ItemGroupEnum} from './stock-utils/ItemGroupEnum';
-import {UOMEnum} from './stock-utils/UOMEnum';
+import {ProfileRole} from '../ProfileRoles';
+import {ItemGroupEnum} from './enums/ItemGroupEnum';
+import {UOMEnum} from './enums/UOMEnum';
 
 export abstract class TestDataFactory {
     public static readonly SUPER_ADMIN_CREDENTIALS = {
@@ -16,7 +16,18 @@ export abstract class TestDataFactory {
     public static readonly MAIN_COMPANY_INFO = {
         name: 'Main Test Company Inc.',
         abbreviation: 'TEST'
+        // add country/currency info for explicit set up
     };
+
+    public static readonly DEFAULT_PRICE = {
+        buying: 100,
+        selling: 140,
+    }
+
+    public static readonly DEFAULT_PRICE_LISTS = {
+        buying: 'Standard Buying',
+        selling: 'Standard Selling',
+    }
 
     static generateUID(): string {
         return Date.now().toString()

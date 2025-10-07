@@ -4,7 +4,7 @@ import {SessionContextStorage} from '../../tools/SessionContext';
 import {Navigation} from '../components/Navigation';
 import {ProfileRole} from '../../tools/ProfileRoles';
 import {BasePage} from './BasePage';
-import {TestDataFactory} from '../../tools/TestDataFactory';
+import {TestDataFactory} from '../../tools/utils/TestDataFactory';
 
 export class LoginPage extends BasePage{
     private static readonly LOGIN_EMAIL_INPUT: string = 'input#login_email';

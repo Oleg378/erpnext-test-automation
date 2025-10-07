@@ -1,5 +1,5 @@
 import {ApiManager} from '../../tools/manager/ApiManager';
-import {TestDataFactory} from '../../tools/TestDataFactory';
+import {TestDataFactory} from '../../tools/utils/TestDataFactory';
 import {expect} from '@playwright/test';
 import {
     Company,
@@ -12,7 +12,8 @@ import {
     SUPPLIER_RESPONSE_SCHEMA,
     User,
     USER_RESPONSE_SCHEMA
-} from '../../tools/record-types';
+} from '../../tools/utils/record-types';
+import {z} from 'zod';
 
 export abstract class ApiClient {
     static async postRetrieveAdminCookies(
@@ -186,6 +187,54 @@ export abstract class ApiClient {
         return result.request_body;
     }
 
+    static async postPriceForItem(
+        apiManager: ApiManager,
+        item: Item,
+        priceList: string,
+        priceRate: number,
+        enableSteps: boolean = true
+    ): Promise<{
+        item_code: string,
+        price_list: string,
+        price_list_rate: number,
+        currency: string }> {
+        const itemPrice = {
+            item_code: item.item_code,
+            price_list: priceList,
+            price_list_rate: priceRate
+        }
+        const result = await apiManager.postCreateRecord(
+            '/api/resource/Item Price',
+            'Item Price',
+            itemPrice,
+            enableSteps
+        );
+        const responseSchema = z.object({
+            data: z.object({
+                name: z.string(),
+                item_code: z.string(),
+                price_list: z.string(),
+                price_list_rate: z.number(),
+                currency: z.string()
+            })
+        });
+        const parsedResponse = responseSchema.parse(result.response_body);
+        expect(
+            parsedResponse.data.price_list,
+            `"price_list" should equal ${result.request_body.price_list}`
+        ).toBe(result.request_body.price_list);
+        expect(
+            parsedResponse.data.price_list_rate,
+            `"price_list_rate" should equal ${result.request_body.price_list_rate}`
+        ).toBe(result.request_body.price_list_rate)
+        return {
+            item_code: parsedResponse.data.item_code,
+            price_list: parsedResponse.data.price_list,
+            price_list_rate: parsedResponse.data.price_list_rate,
+            currency: parsedResponse.data.currency
+        }
+    }
+
     static async getListOfCompanies(
         apiManager: ApiManager,
         enableSteps: boolean = true
@@ -196,55 +245,108 @@ export abstract class ApiClient {
             enableSteps);
     }
 
-    static async getListOfCustomers(
+    static async isItemExists(
         apiManager: ApiManager,
+        item: Item,
         enableSteps: boolean = true
-    ): Promise<string[]> {
-        return apiManager.getAllRecords(
-            '/api/resource/Customer',
-            'Customers',
-            enableSteps
-        );
-    }
-
-    static async getListOfItems(
-        apiManager: ApiManager,
-        enableSteps: boolean = true
-    ): Promise<string[]> {
-        return apiManager.getAllRecords(
+    ): Promise<boolean> {
+        return await apiManager.isRecordExists(
             '/api/resource/Item',
-            'Items',
+            item.item_code,
             enableSteps
         );
     }
 
-    static async getListOfSuppliers(
+    static async isUserExists(
         apiManager: ApiManager,
+        user: User,
         enableSteps: boolean = true
-    ): Promise<string[]> {
-        return apiManager.getAllRecords(
-            '/api/resource/Supplier',
-            'Suppliers',
-            enableSteps
-        );
-    }
-
-    static async getListOfUsers(
-        apiManager: ApiManager,
-        enableSteps: boolean = true
-    ): Promise<string[]> {
-        return apiManager.getAllRecords(
+    ): Promise<boolean> {
+        return await apiManager.isRecordExists(
             '/api/resource/User',
-            'Users',
+            user.email,
             enableSteps
         );
+    }
+
+    static async isSupplierExists(
+        apiManager: ApiManager,
+        supplier: Supplier,
+        enableSteps: boolean = true
+    ): Promise<boolean> {
+        return await apiManager.isRecordExists(
+            '/api/resource/Supplier',
+            supplier.supplier_name,
+            enableSteps
+        );
+    }
+
+    static async isCustomerExists(
+        apiManager: ApiManager,
+        customer: Customer,
+        enableSteps: boolean = true
+    ): Promise<boolean> {
+        return await apiManager.isRecordExists(
+            '/api/resource/Customer',
+            customer.customer_name,
+            enableSteps
+        );
+    }
+
+    static async isCompanyExists(
+        apiManager: ApiManager,
+        companyName: string,
+        enableSteps: boolean = true
+    ): Promise<boolean> {
+        return await apiManager.isRecordExists(
+            '/api/resource/Company',
+            companyName,
+            enableSteps
+        );
+    }
+
+    static async isItemPriceExists(
+        apiManager: ApiManager,
+        item: Item,
+        priceList: string,
+        enableSteps: boolean = true
+    ): Promise<boolean> {
+        const responseSchema = z.object({
+            message: z.array(
+                z.object({
+                    name: z.string(), // item price document name
+                    item_code: z.string(),
+                    price_list: z.string(),
+                    price_list_rate: z.number(),
+                })
+            )
+        });
+
+        const response = await apiManager.getListOf(
+            'Item Price',
+            ["name", "item_code", "price_list", "price_list_rate"],
+            [["item_code", "=", item.item_code]],
+            enableSteps
+        );
+        const parsedData = responseSchema.parse(response);
+        const itemsFromResponse: string[] = parsedData.message.map(item => item.item_code)
+        for (const index of itemsFromResponse) {
+            expect(
+                index,
+                `Item code from response should be ${item.item_code}`
+            ).toBe(item.item_code);
+        }
+        return parsedData.message.filter(
+            item => item.price_list === priceList
+        ).length > 0;
     }
 
     static async putUpdateItemSupplier(
         item: Item,
         supplier: Supplier,
         apiManager: ApiManager,
-        enableSteps: boolean = true): Promise<Item> {
+        enableSteps: boolean = true
+    ): Promise<Item> {
         const record = {
             supplier_items: [
                 {
@@ -252,7 +354,13 @@ export abstract class ApiClient {
                 }
             ]
         }
-        const result = await apiManager.putUpdateRecord(`/api/resource/Item/${item.item_code}`, item.item_code, record, enableSteps);
+        const result = await apiManager
+            .putUpdateRecord(
+                `/api/resource/Item/${item.item_code}`,
+                item.item_code,
+                record,
+                enableSteps
+            );
         const parsedResponse = ITEM_RESPONSE_SCHEMA.parse(result.response_body);
         const suppliersNames: string[] = parsedResponse.data.supplier_items.map(record => record.supplier);
         expect(

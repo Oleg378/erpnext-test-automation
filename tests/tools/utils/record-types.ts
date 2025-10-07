@@ -1,10 +1,7 @@
-import {ItemGroupEnum} from './stock-utils/ItemGroupEnum';
-import {UOMEnum} from './stock-utils/UOMEnum';
+import {ItemGroupEnum} from './enums/ItemGroupEnum';
+import {UOMEnum} from './enums/UOMEnum';
 import {z} from 'zod';
 
-// const baseUsername = TestDataFactory.generateBaseUsername();
-// const finalUsername = username || `${profileRole.role_profile_name}${baseUsername}`;
-// const email = `${finalUsername}@example.com`;
 export interface User {
     email: string,
     first_name: string,
@@ -38,7 +35,6 @@ export const CUSTOMER_RESPONSE_SCHEMA = z.object({
         name: z.string(),
         customer_name: z.string(),
         customer_type: z.string(),
-        country: z.string(),
         language: z.string()
     })
 });
