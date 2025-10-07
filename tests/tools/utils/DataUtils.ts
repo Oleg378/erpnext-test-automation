@@ -3,52 +3,49 @@ import {ApiClient} from '../../app/api/ApiClient';
 import {ApiManager} from '../manager/ApiManager';
 import {TestDataFactory} from './TestDataFactory';
 
-export class DataUtils {
-    constructor(
-        private readonly apiManager: ApiManager,
-        ) {}
+export abstract class DataUtils {
 
-    async ensureItemsWithPricingAndSupplier(items: Item[], supplier: Supplier, enableSteps: boolean = true): Promise<Item[]> {
-        await this.ensureSupplierExists(supplier, enableSteps);
+    static async ensureItemsWithPricingAndSupplier(apiManager: ApiManager, items: Item[], supplier: Supplier, enableSteps: boolean = true): Promise<Item[]> {
+        await DataUtils.ensureSupplierExists(apiManager, supplier, enableSteps);
 
         for (const index of items) {
-            await this.ensureItemExists(index, enableSteps)
-            await ApiClient.putUpdateItemSupplier(index, supplier, this.apiManager, enableSteps);
-            await this.ensureItemSellingPriceExists(index, enableSteps);
-            await this.ensureItemBuyingPriceExists(index, enableSteps);
+            await DataUtils.ensureItemExists(apiManager, index, enableSteps)
+            await ApiClient.putUpdateItemSupplier(index, supplier, apiManager, enableSteps);
+            await DataUtils.ensureItemSellingPriceExists(apiManager, index, enableSteps);
+            await DataUtils.ensureItemBuyingPriceExists(apiManager, index, enableSteps);
         }
         return items;
     }
 
-    async ensureSupplierExists(supplier: Supplier, enableSteps: boolean = true): Promise<void> {
-        await ApiClient.postRetrieveAdminCookies(this.apiManager, enableSteps);
-        if (!await ApiClient.isSupplierExists(this.apiManager, supplier, enableSteps)) {
-            await ApiClient.postCreateNewSupplier(supplier, this.apiManager, enableSteps);
+    static async ensureSupplierExists(apiManager: ApiManager, supplier: Supplier, enableSteps: boolean = true): Promise<void> {
+        await ApiClient.postRetrieveAdminCookies(apiManager, enableSteps);
+        if (!await ApiClient.isSupplierExists(apiManager, supplier, enableSteps)) {
+            await ApiClient.postCreateNewSupplier(supplier, apiManager, enableSteps);
         }
     }
 
-    async isStandardBuyingItemPriceExists(item: Item, enableSteps: boolean = true): Promise<boolean> {
+    static async isStandardBuyingItemPriceExists(apiManager: ApiManager, item: Item, enableSteps: boolean = true): Promise<boolean> {
         return await ApiClient.isItemPriceExists(
-            this.apiManager,
+            apiManager,
             item,
             TestDataFactory.DEFAULT_PRICE_LISTS.buying,
             enableSteps
         );
     }
 
-    async isStandardSellingItemPriceExists(item: Item, enableSteps: boolean = true): Promise<boolean> {
+    static async isStandardSellingItemPriceExists(apiManager: ApiManager, item: Item, enableSteps: boolean = true): Promise<boolean> {
         return await ApiClient.isItemPriceExists(
-            this.apiManager,
+            apiManager,
             item,
             TestDataFactory.DEFAULT_PRICE_LISTS.selling,
             enableSteps
         );
     }
 
-    async ensureItemBuyingPriceExists(item: Item, enableSteps: boolean = true): Promise<void> {
-        if (!await this.isStandardBuyingItemPriceExists(item, enableSteps)) {
+    static async ensureItemBuyingPriceExists(apiManager: ApiManager, item: Item, enableSteps: boolean = true): Promise<void> {
+        if (!await DataUtils.isStandardBuyingItemPriceExists(apiManager, item, enableSteps)) {
             await ApiClient.postPriceForItem(
-                this.apiManager,
+                apiManager,
                 item, TestDataFactory.DEFAULT_PRICE_LISTS.buying,
                 TestDataFactory.DEFAULT_PRICE.buying,
                 enableSteps
@@ -56,10 +53,10 @@ export class DataUtils {
         }
     }
 
-    async ensureItemSellingPriceExists(item: Item, enableSteps: boolean = true): Promise<void> {
-        if (!await this.isStandardSellingItemPriceExists(item, enableSteps)) {
+    static async ensureItemSellingPriceExists(apiManager: ApiManager, item: Item, enableSteps: boolean = true): Promise<void> {
+        if (!await DataUtils.isStandardSellingItemPriceExists(apiManager, item, enableSteps)) {
             await ApiClient.postPriceForItem(
-                this.apiManager,
+                apiManager,
                 item, TestDataFactory.DEFAULT_PRICE_LISTS.selling,
                 TestDataFactory.DEFAULT_PRICE.selling,
                 enableSteps
@@ -67,23 +64,23 @@ export class DataUtils {
         }
     }
 
-    async ensureCustomerExists(customer: Customer, enableSteps: boolean = true): Promise<void> {
-        await ApiClient.postRetrieveAdminCookies(this.apiManager, enableSteps);
-        if (!await ApiClient.isCustomerExists(this.apiManager, customer, enableSteps)) {
-            await ApiClient.postCreateNewCustomer(customer, this.apiManager, enableSteps);
+    static async ensureCustomerExists(apiManager: ApiManager, customer: Customer, enableSteps: boolean = true): Promise<void> {
+        await ApiClient.postRetrieveAdminCookies(apiManager, enableSteps);
+        if (!await ApiClient.isCustomerExists(apiManager, customer, enableSteps)) {
+            await ApiClient.postCreateNewCustomer(customer, apiManager, enableSteps);
         }
     }
 
-    async ensureUserExists(user: User): Promise<void> {
-        await ApiClient.postRetrieveAdminCookies(this.apiManager);
-        if (!await ApiClient.isUserExists(this.apiManager, user)) {
-            await ApiClient.postCreateNewUser(user, this.apiManager);
+    static async ensureUserExists(apiManager: ApiManager, user: User): Promise<void> {
+        await ApiClient.postRetrieveAdminCookies(apiManager);
+        if (!await ApiClient.isUserExists(apiManager, user)) {
+            await ApiClient.postCreateNewUser(user, apiManager);
         }
     }
-    async ensureItemExists(item: Item, enableSteps: boolean = true): Promise<void> {
-        await ApiClient.postRetrieveAdminCookies(this.apiManager, enableSteps);
-        if (!await ApiClient.isItemExists(this.apiManager, item, enableSteps)) {
-            await ApiClient.postCreateNewItem(item, this.apiManager, enableSteps);
+    static async ensureItemExists(apiManager: ApiManager, item: Item, enableSteps: boolean = true): Promise<void> {
+        await ApiClient.postRetrieveAdminCookies(apiManager, enableSteps);
+        if (!await ApiClient.isItemExists(apiManager, item, enableSteps)) {
+            await ApiClient.postCreateNewItem(item, apiManager, enableSteps);
         }
     }
 }

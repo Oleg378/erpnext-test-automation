@@ -9,20 +9,18 @@ import {Navigation} from '../components/Navigation';
 import {TestDataFactory} from '../../tools/utils/TestDataFactory';
 import {ItemGroupEnum} from '../../tools/utils/enums/ItemGroupEnum';
 import {UOMEnum} from '../../tools/utils/enums/UOMEnum';
+import {ApiClient} from '../api/ApiClient';
 
 interface SalesFlowConfig {
-    apiManager: ApiManager;
     items?: Item[];
     supplier?: Supplier;
     customer?: Customer;
 }
 
 export class SalesFlow {
-    private readonly dataUtils: DataUtils;
     private readonly items: Item[];
     private readonly supplier: Supplier;
     private readonly customer: Customer;
-    private readonly apiManager: ApiManager;
 
     private static readonly SALES_USERNAME: string = 'Sales_User';
     private static readonly DEFAULT_ITEMS: Item[] = [
@@ -35,35 +33,40 @@ export class SalesFlow {
         customer_name: 'BALROG',
         customer_type: 'Company'
     };
+    private static readonly DEFAULT_CONFIG: SalesFlowConfig = {
+        items: SalesFlow.DEFAULT_ITEMS,
+        supplier: SalesFlow.DEFAULT_SUPPLIER,
+        customer: SalesFlow.DEFAULT_CUSTOMER
+    }
 
     constructor(
         config: SalesFlowConfig
     ) {
-        this.apiManager = config.apiManager;
-        this.dataUtils = new DataUtils(config.apiManager);
         this.items = config.items || SalesFlow.DEFAULT_ITEMS;
         this.supplier = config.supplier || SalesFlow.DEFAULT_SUPPLIER;
         this.customer = config.customer || SalesFlow.DEFAULT_CUSTOMER;
 
     }
 
-    async init() {
-        await this.dataUtils.ensureItemsWithPricingAndSupplier(this.items, this.supplier, false);
-        await this.dataUtils.ensureCustomerExists(this.customer, false);
+    async init(apiManager: ApiManager) {
+        await ApiClient.postRetrieveAdminCookies(apiManager, false)
+        await DataUtils.ensureItemsWithPricingAndSupplier(apiManager, this.items, this.supplier, false);
+        await DataUtils.ensureCustomerExists(apiManager, this.customer, false);
     }
 
-    static async create(config: SalesFlowConfig): Promise<SalesFlow> {
-        const instance = new SalesFlow(config);
-        await instance.init();
+    static async create(apiManager: ApiManager, config?: SalesFlowConfig): Promise<SalesFlow> {
+        const instance = new SalesFlow(config || SalesFlow.DEFAULT_CONFIG);
+        await instance.init(apiManager);
         return instance;
     }
 
     sales = {
         createQuotation: async (
+            apiManager: ApiManager,
             pageManager: PageManager,
         ): Promise<string> => {
             const homePage: HomePage = (await LogInUtils.ensureUserLoggedIn(
-                this.apiManager,
+                apiManager,
                 pageManager,
                 ProfileRoles.Sales,
                 SalesFlow.SALES_USERNAME

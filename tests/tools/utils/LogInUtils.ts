@@ -16,7 +16,7 @@ export abstract class LogInUtils {
         username?: string
     ): Promise<{homePage: HomePage, userEmail: string}> {
         const user: User = TestDataFactory.generateUserInfo(role, username);
-        await new DataUtils(apiManager).ensureUserExists(user);
+        await DataUtils.ensureUserExists(apiManager, user);
         const homepage: HomePage = await new LoginPage(pageManager).loginOrRestoreSession(user.email, role);
 
         return {homePage: homepage, userEmail: user.email};
