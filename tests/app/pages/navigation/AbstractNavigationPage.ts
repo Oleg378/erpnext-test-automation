@@ -8,8 +8,8 @@ export class AbstractNavigationPage extends BasePage{
     }
 
     async navigateTo<T extends AbstractNavigationPage>(section: NavigationTarget<T>): Promise<T> {
-        await this.manager.click(section.button, `navigate to ${section.returnType.name}`);
-        await this.manager.locateElementByText(section.visibleElement);
-        return new section.returnType(this.manager);
+        await this.pageManager.click(section.button, `navigate to ${section.returnType.name}`);
+        await this.pageManager.locateElementByText(section.visibleElement);
+        return new section.returnType(this.pageManager);
     }
 }

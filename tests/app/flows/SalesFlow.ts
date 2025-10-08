@@ -10,6 +10,8 @@ import {TestDataFactory} from '../../tools/utils/TestDataFactory';
 import {ItemGroupEnum} from '../../tools/utils/enums/ItemGroupEnum';
 import {UOMEnum} from '../../tools/utils/enums/UOMEnum';
 import {ApiClient} from '../api/ApiClient';
+import {SellingPage} from '../pages/navigation/SellingPage';
+import {ORDER_TYPES, QUOTATION_TO_TYPES} from '../pages/sales/quotation/QuotationPage';
 
 interface SalesFlowConfig {
     items?: Item[];
@@ -71,7 +73,13 @@ export class SalesFlow {
                 ProfileRoles.Sales,
                 SalesFlow.SALES_USERNAME
             )).homePage;
-            await homePage.navigateTo(Navigation.SELLING)
+            // draft:
+            const sellingPage: SellingPage = await homePage.navigateTo(Navigation.SELLING);
+            const quotationPage = await sellingPage.openQuotationListPage();
+            const newQuotation = await quotationPage.openNewQuotationPage();
+            await newQuotation.setQuotationTo(QUOTATION_TO_TYPES.customer, 'API Test Custome111r 3');
+            await newQuotation.setOrderType(ORDER_TYPES.maintenance)
+
             // POM magic
              return 'quotation document UID';
 

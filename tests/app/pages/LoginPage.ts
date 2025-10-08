@@ -25,36 +25,36 @@ export class LoginPage extends BasePage{
     async loginOrRestoreSession(username: string, role: ProfileRole): Promise<HomePage> {
         if (SessionContextStorage.hasUserSession(username)) {
             this.sessionContext = await this.restoreSessionByEmail(username);
-            await this.manager.locateElementByText(Navigation.HOME.visibleElement);
+            await this.pageManager.locateElementByText(Navigation.HOME.visibleElement);
         } else {
-            await this.manager.fillInput(LoginPage.LOGIN_EMAIL_INPUT, username, `fill log in email '${username}'`)
-            await this.manager.fillInput(LoginPage.LOGIN_PASSWORD_INPUT, role.new_password, `fill in password '${role.new_password}'`)
+            await this.pageManager.fillInput(LoginPage.LOGIN_EMAIL_INPUT, username, `fill log in email '${username}'`)
+            await this.pageManager.fillInput(LoginPage.LOGIN_PASSWORD_INPUT, role.new_password, `fill in password '${role.new_password}'`)
 
-            await this.manager.click(LoginPage.LOGIN_BUTTON, 'Click on \'login\' button');
-            await this.manager.locateElementByText(Navigation.HOME.visibleElement);
-            this.sessionContext = await this.manager.generateSessionContext(role);
+            await this.pageManager.click(LoginPage.LOGIN_BUTTON, 'Click on \'login\' button');
+            await this.pageManager.locateElementByText(Navigation.HOME.visibleElement);
+            this.sessionContext = await this.pageManager.generateSessionContext(role);
             SessionContextStorage.putUserSession(username, this.sessionContext)
         }
-        return new HomePage(this.manager);
+        return new HomePage(this.pageManager);
     }
 
     async fillSetUpWizard(): Promise<HomePage> {
-        await this.manager.fillInput(LoginPage.LOGIN_EMAIL_INPUT, TestDataFactory.SUPER_ADMIN_CREDENTIALS.email, 'fill log in email \'Administrator\'')
-        await this.manager.fillInput(LoginPage.LOGIN_PASSWORD_INPUT, TestDataFactory.SUPER_ADMIN_CREDENTIALS.password, 'fill in password \'admin\'')
-        await this.manager.click(LoginPage.LOGIN_BUTTON, 'Click on \'login\' button');
+        await this.pageManager.fillInput(LoginPage.LOGIN_EMAIL_INPUT, TestDataFactory.SUPER_ADMIN_CREDENTIALS.email, 'fill log in email \'Administrator\'')
+        await this.pageManager.fillInput(LoginPage.LOGIN_PASSWORD_INPUT, TestDataFactory.SUPER_ADMIN_CREDENTIALS.password, 'fill in password \'admin\'')
+        await this.pageManager.click(LoginPage.LOGIN_BUTTON, 'Click on \'login\' button');
 
-        await this.manager.click(LoginPage.WIZARD_NEXT_BUTTON);
+        await this.pageManager.click(LoginPage.WIZARD_NEXT_BUTTON);
 
-        await this.manager.fillInput(LoginPage.FULL_NAME_INPUT, TestDataFactory.USER_FOR_SYSTEM_SETUP.fullName)
-        await this.manager.fillInput(LoginPage.EMAIL_INPUT, TestDataFactory.USER_FOR_SYSTEM_SETUP.email)
-        await this.manager.fillInput(LoginPage.PASSWORD_INPUT, TestDataFactory.USER_FOR_SYSTEM_SETUP.password)
-        await this.manager.click(LoginPage.WIZARD_NEXT_BUTTON);
+        await this.pageManager.fillInput(LoginPage.FULL_NAME_INPUT, TestDataFactory.USER_FOR_SYSTEM_SETUP.fullName)
+        await this.pageManager.fillInput(LoginPage.EMAIL_INPUT, TestDataFactory.USER_FOR_SYSTEM_SETUP.email)
+        await this.pageManager.fillInput(LoginPage.PASSWORD_INPUT, TestDataFactory.USER_FOR_SYSTEM_SETUP.password)
+        await this.pageManager.click(LoginPage.WIZARD_NEXT_BUTTON);
 
-        await this.manager.fillInput(LoginPage.COMPANY_NAME_INPUT, TestDataFactory.MAIN_COMPANY_INFO.name)
-        await this.manager.fillInput(LoginPage.COMPANY_ABBR_INPUT, TestDataFactory.MAIN_COMPANY_INFO.abbreviation)
-        await this.manager.click(LoginPage.COMPLETE_BUTTON);
+        await this.pageManager.fillInput(LoginPage.COMPANY_NAME_INPUT, TestDataFactory.MAIN_COMPANY_INFO.name)
+        await this.pageManager.fillInput(LoginPage.COMPANY_ABBR_INPUT, TestDataFactory.MAIN_COMPANY_INFO.abbreviation)
+        await this.pageManager.click(LoginPage.COMPLETE_BUTTON);
 
-        await this.manager.locateElementByText(Navigation.HOME.visibleElement);
-        return new HomePage(this.manager);
+        await this.pageManager.locateElementByText(Navigation.HOME.visibleElement);
+        return new HomePage(this.pageManager);
     }
 }

@@ -35,11 +35,20 @@ export class PageManager extends ReportManager {
 
     async fillInput(input: string, value: string, description?: string): Promise<void> {
         return this.test.step(description || `Fill input ${input} with "${value}"`, async () => {
-            const locator: Locator = this.page.locator(input).first();
+            const locator: Locator = this.page.locator(input);
             await locator.fill(value);
             const screenshot = await locator.screenshot();
             await this.testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });
         });
+    }
+
+    async selectOptionByVisibleText(select: string, value: string, description?: string): Promise<void> {
+        return this.test.step(description || `Select ${value} in "${select}"`, async () => {
+            const locator: Locator = this.page.locator(select);
+            await locator.selectOption(value);
+            const screenshot = await locator.screenshot();
+            await this.testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });
+        })
     }
 
     async assertElementIsVisible(locator: string, description?: string): Promise<void> {
