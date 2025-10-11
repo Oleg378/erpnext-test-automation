@@ -1,6 +1,8 @@
 import {ItemGroupEnum} from './enums/ItemGroupEnum';
 import {UOMEnum} from './enums/UOMEnum';
 import {z} from 'zod';
+import {DocStatesEnum} from './enums/DocStatesEnum';
+import {DocTypesEnum} from './enums/DocTypesEnum';
 
 export interface User {
     email: string,
@@ -94,3 +96,9 @@ export const COMPANY_RESPONSE_SCHEMA = z.object({
         is_group: z.number()
     })
 });
+
+export interface Document {
+    name: string;
+    status:  DocStatesEnum;
+    doctype: DocTypesEnum;
+}
