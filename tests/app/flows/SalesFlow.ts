@@ -1,4 +1,4 @@
-import {Customer, Item, Supplier} from '../../tools/utils/record-types';
+import {Customer, Item, Supplier, Document} from '../../tools/utils/record-types';
 import {DataUtils} from '../../tools/utils/DataUtils';
 import {ApiManager} from '../../tools/manager/ApiManager';
 import {PageManager} from '../../tools/manager/PageManager';
@@ -11,25 +11,34 @@ import {ItemGroupEnum} from '../../tools/utils/enums/ItemGroupEnum';
 import {UOMEnum} from '../../tools/utils/enums/UOMEnum';
 import {ApiClient} from '../api/ApiClient';
 import {SellingPage} from '../pages/navigation/SellingPage';
-import {ORDER_TYPES, QUOTATION_TO_TYPES} from '../pages/sales/quotation/QuotationPage';
+import {ORDER_TYPES, QUOTATION_TO_TYPES, QuotationPage} from '../pages/sales/quotation/QuotationPage';
+import {QuotationListPage} from '../pages/sales/QuotationListPage';
+import {NewQuotationPage} from '../pages/sales/quotation/NewQuotationPage';
+import {DocStatesEnum} from '../../tools/utils/enums/DocStatesEnum';
+import {DocTypesEnum} from '../../tools/utils/enums/DocTypesEnum';
 
 interface SalesFlowConfig {
-    items?: Item[];
+    items?: Map<Item, number>;
     supplier?: Supplier;
     customer?: Customer;
 }
 
+interface SalesFlowContext {
+    items: Map<Item, number>;
+    supplier: Supplier;
+    customer: Customer;
+    quotation?: Document;
+}
+
 export class SalesFlow {
-    private readonly items: Item[];
-    private readonly supplier: Supplier;
-    private readonly customer: Customer;
+    private context: SalesFlowContext;
 
     private static readonly SALES_USERNAME: string = 'Sales_User';
-    private static readonly DEFAULT_ITEMS: Item[] = [
-        TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'THE-RING'),
-        TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.KG, 'AXE'),
-        TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.BOX, 'ARROW-FOR-BOROMIR')
-    ];
+    private static readonly DEFAULT_ITEMS: Map<Item, number> = new Map<Item, number>([
+        [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'THE-RING'), 2],
+        [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.KG, 'AXE'), 4],
+        [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.BOX, 'ARROW-FOR-BOROMIR'), 6]
+        ]);
     private static readonly DEFAULT_SUPPLIER: Supplier = {supplier_name: 'SARUMAN'};
     private static readonly DEFAULT_CUSTOMER: Customer = {
         customer_name: 'BALROG',
@@ -38,22 +47,23 @@ export class SalesFlow {
     private static readonly DEFAULT_CONFIG: SalesFlowConfig = {
         items: SalesFlow.DEFAULT_ITEMS,
         supplier: SalesFlow.DEFAULT_SUPPLIER,
-        customer: SalesFlow.DEFAULT_CUSTOMER
+        customer: SalesFlow.DEFAULT_CUSTOMER,
     }
 
     constructor(
         config: SalesFlowConfig
     ) {
-        this.items = config.items || SalesFlow.DEFAULT_ITEMS;
-        this.supplier = config.supplier || SalesFlow.DEFAULT_SUPPLIER;
-        this.customer = config.customer || SalesFlow.DEFAULT_CUSTOMER;
-
+        this.context = {
+            items: config.items || SalesFlow.DEFAULT_ITEMS,
+            supplier: config.supplier || SalesFlow.DEFAULT_SUPPLIER,
+            customer: config.customer || SalesFlow.DEFAULT_CUSTOMER,
+        }
     }
 
     async init(apiManager: ApiManager) {
         await ApiClient.postRetrieveAdminCookies(apiManager, false)
-        await DataUtils.ensureItemsWithPricingAndSupplier(apiManager, this.items, this.supplier, false);
-        await DataUtils.ensureCustomerExists(apiManager, this.customer, false);
+        await DataUtils.ensureItemsWithPricingAndSupplier(apiManager, Array.from(this.context.items.keys()), this.context.supplier, false);
+        await DataUtils.ensureCustomerExists(apiManager, this.context.customer, false);
     }
 
     static async create(apiManager: ApiManager, config?: SalesFlowConfig): Promise<SalesFlow> {
@@ -63,27 +73,33 @@ export class SalesFlow {
     }
 
     sales = {
-        createQuotation: async (
+        createQuotationDraft: async (
             apiManager: ApiManager,
             pageManager: PageManager,
-        ): Promise<string> => {
+        ): Promise<void> => {
             const homePage: HomePage = (await LogInUtils.ensureUserLoggedIn(
                 apiManager,
                 pageManager,
                 ProfileRoles.Sales,
                 SalesFlow.SALES_USERNAME
             )).homePage;
-            // draft:
             const sellingPage: SellingPage = await homePage.navigateTo(Navigation.SELLING);
-            const quotationPage = await sellingPage.openQuotationListPage();
-            const newQuotation = await quotationPage.openNewQuotationPage();
-            await newQuotation.setQuotationTo(QUOTATION_TO_TYPES.customer, 'API Test Custome111r 3');
-            await newQuotation.setOrderType(ORDER_TYPES.maintenance)
-
-            // POM magic
-             return 'quotation document UID';
-
+            const quotationListPage: QuotationListPage = await sellingPage.openQuotationListPage();
+            const newQuotation: NewQuotationPage = await quotationListPage.openNewQuotationPage();
+            await newQuotation.setQuotationTo(QUOTATION_TO_TYPES.customer, this.context.customer.customer_name);
+            await newQuotation.setOrderType(ORDER_TYPES.maintenance);
+            await newQuotation.setItems(this.context.items);
+            const quotationPage: QuotationPage = await newQuotation.saveQuotation();
+            await quotationPage.validateDataInGrid(this.context.items);
+            // await quotationPage.updateItemQuantity(Array.from(this.items.keys())[1], 5);
+            const quotationName = await quotationPage.getQuotationDocumentName()
+            this.context.quotation = {
+                name: quotationName,
+                status:  DocStatesEnum.DRAFT,
+                doctype: DocTypesEnum.QUOTATION
+            }
         },
+
         completeOrder: async (
             quotationRequest: string,
             pageManager: PageManager
