@@ -160,8 +160,8 @@ export class ApiManager extends ReportManager {
         return expect(response, 'Response Code should be 200-299').toBeOK()
     }
 
-    // Helper method to process response body
-    private async processResponseBody(response: ApiResponse): Promise<{
+    // Helper method to process response body for reporting
+    private async processResponseForReport(response: ApiResponse): Promise<{
         attachmentBody: string;
         contentType: string;
     }> {
@@ -209,7 +209,7 @@ export class ApiManager extends ReportManager {
                 const response = await action();
                 // Type-safe check before calling body()
                 if (this.isApiResponse(response)) {
-                    const { attachmentBody, contentType } = await this.processResponseBody(response);
+                    const { attachmentBody, contentType } = await this.processResponseForReport(response);
 
                     await this.testInfo.attach('response', {
                         body: attachmentBody,
