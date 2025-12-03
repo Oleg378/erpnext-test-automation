@@ -31,13 +31,13 @@ export class PageManager extends ReportManager {
 
     async click(selector: string, description?: string): Promise<void> {
         return this.withStep(description || `Click on ${selector}`, async () => {
-            await this.page.click(selector);
+            await this.page.locator(selector).first().click();
         });
     }
 
     async fillInput(input: string | Locator, value: string, description?: string): Promise<void> {
         return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
-            const locator = this.ensureIsLocator(input);
+            const locator: Locator = this.ensureIsLocator(input);
 
             // there are input cells in the grid, but they are type of <div>; this 'if - else' dedicated to solve this problem:
             const isDiv = await locator.evaluate(el => el.tagName === 'DIV');
@@ -49,6 +49,16 @@ export class PageManager extends ReportManager {
             } else {
                 await locator.fill(value);
             }
+        })
+    }
+
+    async fillDate(input: string, value: string, description?: string): Promise<void> {
+        return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
+            const locator: Locator = this.ensureIsLocator(input);
+            await locator.click();
+            await locator.pressSequentially(value);
+            // type value
+            await this.page.keyboard.press('Enter');
         })
     }
 
@@ -66,6 +76,16 @@ export class PageManager extends ReportManager {
             .locator(`xpath=./ancestor::*[contains(@class, "grid-row")][1]//*[@data-fieldname="${cellDataFieldName}"]`).first();
     }
 
+    private ensureIsLocator(element: string| Locator): Locator {
+        let locator: Locator;
+        if (typeof element === "string") {
+            locator = this.page.locator(element).first();
+        } else {
+            locator = element;
+        }
+        return locator;
+    }
+
     gridRow = {
         interactWithCell: async (
             item: Item,
@@ -80,15 +100,15 @@ export class PageManager extends ReportManager {
     }
 
     async assertVisibleText(element: string | Locator, text: string, description?: string): Promise<void> {
-        return this.withStep(description || `Assert: ${text} in "${text}"`, async () => {
-            const locator = this.ensureIsLocator(element);
+        return this.withStep(description || `Assert text "${text}" is visible"`, async () => {
+            const locator: Locator = this.ensureIsLocator(element);
             await expect(locator).toHaveText(text);
         })
     }
 
     async getVisibleText(element: string, description?: string): Promise<string> {
         return this.withStep(description || `Get text from: ${element}"`, async () => {
-            const locator = this.ensureIsLocator(element);
+            const locator = this.page.locator(element).first();
             let result = await locator.textContent()
             if (!result) {
                 result = '';
@@ -97,10 +117,10 @@ export class PageManager extends ReportManager {
         })
     }
 
-    async assertElementIsVisible(locator: string, description?: string): Promise<void> {
-        return this.withStep(description || `Element ${locator} is confirmed to be visible`, async () => {
-            const element: Locator = this.page.locator(locator).first();
-            await expect(element).toBeVisible({ timeout: PageManager.WAIT_MS });
+    async assertElementIsVisible(element: string, description?: string): Promise<void> {
+        return this.withStep(description || `Element ${element} is confirmed to be visible`, async () => {
+            const locator: Locator = this.page.locator(element).first();
+            await expect(locator).toBeVisible({ timeout: PageManager.WAIT_MS });
         });
     }
 
@@ -110,16 +130,6 @@ export class PageManager extends ReportManager {
             await expect(locator).toBeVisible({ timeout: PageManager.WAIT_MS });
             return locator;
         });
-    }
-
-    private ensureIsLocator(locator: string | Locator): Locator {
-        let result: Locator;
-        if (typeof locator === 'string') {
-            result = this.page.locator(locator);
-        } else {
-            result = locator;
-        }
-        return result;
     }
 
     async wait(number: number): Promise<void> {
@@ -149,22 +159,13 @@ export class PageManager extends ReportManager {
 
     async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {
         return this.test.step(description, async () => {
-            try {
-                const result = await action();
-                const screenshot = await this.page.screenshot();
-                await this.testInfo.attach('screenshot', {
-                    body: screenshot,
-                    contentType: 'image/png'
-                });
-                return result;
-            } catch (error) {
-                const screenshot = await this.page.screenshot();
-                await this.testInfo.attach('error-screenshot', {
-                    body: screenshot,
-                    contentType: 'image/png'
-                });
-                throw error;
-            }
+            const result = await action();
+            const screenshot = await this.page.screenshot();
+            await this.testInfo.attach('screenshot', {
+                body: screenshot,
+                contentType: 'image/png'
+            });
+            return result;
         });
     }
 }

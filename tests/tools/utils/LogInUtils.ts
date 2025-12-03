@@ -7,6 +7,11 @@ import {TestDataFactory} from './TestDataFactory';
 import {User} from './record-types';
 import {DataUtils} from './DataUtils';
 
+export interface LoggedInUser {
+    homePage:  HomePage;
+    user: User
+}
+
 export abstract class LogInUtils {
 
     static async ensureUserLoggedIn(
@@ -14,11 +19,11 @@ export abstract class LogInUtils {
         pageManager: PageManager,
         role: ProfileRole,
         username?: string
-    ): Promise<{homePage: HomePage, userEmail: string}> {
+    ): Promise<LoggedInUser> {
         const user: User = TestDataFactory.generateUserInfo(role, username);
         await DataUtils.ensureUserExists(apiManager, user);
         const homepage: HomePage = await new LoginPage(pageManager).loginOrRestoreSession(user.email, role);
 
-        return {homePage: homepage, userEmail: user.email};
+        return {homePage: homepage, user: user};
     }
 }
