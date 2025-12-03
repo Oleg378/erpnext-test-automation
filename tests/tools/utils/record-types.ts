@@ -97,7 +97,7 @@ export const COMPANY_RESPONSE_SCHEMA = z.object({
     })
 });
 
-export interface Document {
+export interface ErpDocument {
     name: string;
     status:  DocStatesEnum;
     doctype: DocTypesEnum;

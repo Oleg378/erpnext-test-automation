@@ -1,9 +1,8 @@
-import {BasePage} from '../../BasePage';
 import {PageManager} from '../../../../tools/manager/PageManager';
 import {Item} from '../../../../tools/utils/record-types';
 import {GridColEnum} from '../../../components/GridColEnum';
 import {TestDataFactory} from '../../../../tools/utils/TestDataFactory';
-import {DocStatesEnum} from '../../../../tools/utils/enums/DocStatesEnum';
+import {BaseDocumentPage} from '../../BaseDocumentPage';
 
 export enum QUOTATION_TO_TYPES {
     customer =  'Customer',
@@ -15,7 +14,7 @@ export enum ORDER_TYPES {
     shopping_cart = 'Shopping Cart'
 }
 
-export class QuotationPage extends BasePage {
+export class QuotationPage extends BaseDocumentPage {
     private static readonly QUOTATION_TO_TYPE_INPUT: string = 'input[data-fieldname="quotation_to"]:visible';
     private static readonly PARTY_INPUT: string = 'input[data-fieldname="party_name"]:visible';
     private static readonly ORDER_TYPE_SELECT: string = 'select[data-fieldname="order_type"]:visible';
@@ -27,28 +26,26 @@ export class QuotationPage extends BasePage {
     private static readonly MODAL_WINDOW_SEARCH_BUTTON: string = 'button:has-text("Search"):visible';
     private static readonly MODAL_WINDOW_SET_QUANTITY_BUTTON : string = 'button:has-text("Set Quantity"):visible';
     private static readonly CLOSE_MODAL_WINDOW_BUTTON: string = '.btn-modal-close:visible';
-    private static readonly SAVE_DOCUMENT_BUTTON: string = 'button[data-label="Save"]:visible';
-    private static readonly DOCUMENT_STATUS: string = '.indicator-pill:visible';
-    private static readonly DOCUMENT_NAME: string = '#navbar-breadcrumbs .disabled';
 
     constructor(pageManager: PageManager) {
         super(pageManager);
     }
 
-    async setQuotationTo(quotationTo: QUOTATION_TO_TYPES, partyName: string): Promise<QuotationPage> {
+    async setQuotationTo(quotationTo: QUOTATION_TO_TYPES, partyName: string): Promise<this> {
         await this.pageManager.fillInput(
             QuotationPage.QUOTATION_TO_TYPE_INPUT,
             quotationTo,
-            `Set "quotationTo" = "${quotationTo}"`)
+            `Set "quotationTo" = "${quotationTo}"`
+        );
         await this.pageManager.fillInput(
             QuotationPage.PARTY_INPUT,
             partyName,
             `Set "${quotationTo}" = "${partyName}"`
-        )
+        );
         return this;
     }
 
-    async setOrderType(orderType: ORDER_TYPES): Promise<QuotationPage> {
+    async setOrderType(orderType: ORDER_TYPES): Promise<this> {
         await this.pageManager.selectOptionByVisibleText(
             QuotationPage.ORDER_TYPE_SELECT,
             orderType,
@@ -56,7 +53,7 @@ export class QuotationPage extends BasePage {
         return this;
     }
 
-    async deleteAllRowsInItemsGrid(): Promise<QuotationPage> {
+    async deleteAllRowsInItemsGrid(): Promise<this> {
         await this.pageManager.click(
             QuotationPage.SELECT_ALL_ITEMS_CHECKBOX,
             'Select all Rows in Items Grid'
@@ -68,7 +65,7 @@ export class QuotationPage extends BasePage {
         return this;
     }
 
-    async setItems(items: Map<Item, number>): Promise<QuotationPage> {
+    async setItems(items: Map<Item, number>): Promise<this> {
         await this.deleteAllRowsInItemsGrid();
 
         await this.pageManager.click(
@@ -88,7 +85,7 @@ export class QuotationPage extends BasePage {
             await this.pageManager.click(
                 `a[data-value="${item.item_code}"]`,
                 `Select Item "${item.item_code}"`
-                )
+            );
             await this.pageManager.fillInput(
                 QuotationPage.QUANTITY_FOR_NEW_ITEM_INPUT,
                 quantity.toString(),
@@ -106,24 +103,13 @@ export class QuotationPage extends BasePage {
         return this;
     }
 
-    async saveQuotation(): Promise<QuotationPage> {
-        await this.pageManager.click(
-            QuotationPage.SAVE_DOCUMENT_BUTTON,
-            'Save document');
-        await this.pageManager.assertVisibleText(
-            QuotationPage.DOCUMENT_STATUS,
-            DocStatesEnum.DRAFT,
-            `Assert Document Status is "${DocStatesEnum.DRAFT}"`)
-        return this;
-    }
-
-    async updateItemQuantity(item: Item, quantity: number): Promise<QuotationPage> {
+    async updateItemQuantity(item: Item, quantity: number): Promise<this> {
         await this.pageManager.gridRow.interactWithCell(
             item,
             GridColEnum.QUANTITY,
             this.pageManager.fillInput.bind(this.pageManager),
             quantity.toString()
-        )
+        );
         return this;
     }
 
@@ -133,21 +119,25 @@ export class QuotationPage extends BasePage {
                 item,
                 GridColEnum.QUANTITY,
                 this.pageManager.assertVisibleText.bind(this.pageManager),
-                quantity.toString())
+                quantity.toString()
+            );
 
             await this.pageManager.gridRow.interactWithCell(
                 item,
                 GridColEnum.AMOUNT,
                 this.pageManager.assertVisibleText.bind(this.pageManager),
-                `₪ ${quantity * TestDataFactory.DEFAULT_PRICE.selling}.00`) // inaccurate
+                `₪ ${QuotationPage.splitNumberByCommas(quantity * TestDataFactory.DEFAULT_PRICE.selling)}.00`
+            ); // inaccurate
         }
         return this;
     }
 
-    async getQuotationDocumentName(): Promise<string> {
-        return await this.pageManager.getVisibleText(
-            QuotationPage.DOCUMENT_NAME,
-            'Get Quotation Document Name',
-            );
+    private static splitNumberByCommas(num: number): string {
+        return new Intl.NumberFormat('en-US').format(Number(num));
+    }
+
+    async saveDocument(): Promise<QuotationPage> {
+        await this.save();
+        return this;
     }
 }
