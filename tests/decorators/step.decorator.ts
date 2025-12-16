@@ -12,13 +12,13 @@
 
 export function Step(description: string) {
     return function (
-        originalMethod: Function,
+        originalMethod: (...args: any[]) => any,
         context: ClassMethodDecoratorContext
     ) {
         if (context.kind !== 'method') return;
 
         return async function (this: any, ...args: any[]) {
-            let testContext =
+            const testContext =
                 args.find(a => a?.test?.step)?.test ??
                 this?.pageManager?.test;
 

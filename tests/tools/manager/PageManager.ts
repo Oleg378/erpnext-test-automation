@@ -21,10 +21,6 @@ export class PageManager extends ReportManager {
         this.test = test;
     }
 
-    async init(): Promise<void> {
-        await this.gotoHome();
-    }
-
     async gotoHome(): Promise<void> {
         await this.page.goto('/app');
     }
@@ -63,11 +59,9 @@ export class PageManager extends ReportManager {
     }
 
     async selectOptionByVisibleText(select: string, value: string, description?: string): Promise<void> {
-        return this.test.step(description || `Select ${value} in "${select}"`, async () => {
+        return this.withStep(description || `Select ${value} in "${select}"`, async () => {
             const locator: Locator = this.page.locator(select);
             await locator.selectOption(value);
-            const screenshot = await locator.screenshot();
-            await this.testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });
         })
     }
 
@@ -148,13 +142,6 @@ export class PageManager extends ReportManager {
         this.context = await this.browser.newContext({storageState: context.storageState });
         this.page = await this.context.newPage();
         await this.gotoHome();
-    }
-
-    async close() {
-        if (this.context) {
-            await this.page.close();
-            await this.context.close();
-        }
     }
 
     protected async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {

@@ -8,34 +8,34 @@ import {StockPage} from '../pages/navigation/StockPage';
 
 export interface NavigationTarget<T extends AbstractNavigationPage> {
     readonly button: string;
-    readonly visibleElement: string;
+    readonly visibleText: string;
     readonly returnType: new (page: PageManager) => T;
 }
 
 export const Navigation = {
     HOME: {
         button: 'a.item-anchor[title="Home"]',
-        visibleElement: 'Your Shortcuts',
+        visibleText: 'Your Shortcuts',
         returnType: HomePage
     } as NavigationTarget<HomePage>,
     ACCOUNTING: {
         button: 'a.item-anchor[title="Accounting"]',
-        visibleElement: 'Profit and Loss',
+        visibleText: 'Profit and Loss',
         returnType: AccountingPage
     } as NavigationTarget<AccountingPage>,
     PAYABLES: {
         button: 'a.item-anchor[title="Payables"]',
-        visibleElement: 'Shortcuts',
+        visibleText: 'Shortcuts',
         returnType: PayablesPage
     } as NavigationTarget<PayablesPage>,
     SELLING: {
         button: 'a.item-anchor[title="Selling"]',
-        visibleElement: 'Sales Order Trends',
+        visibleText: 'Sales Order Trends',
         returnType: SellingPage
     } as NavigationTarget<SellingPage>,
     STOCK: {
         button: 'a.item-anchor[title="Stock"]',
-        visibleElement: 'Total Stock Value',
+        visibleText: 'Total Stock Value',
         returnType: StockPage
     } as NavigationTarget<StockPage>,
     // TODO implement missing navigation elements if needed:

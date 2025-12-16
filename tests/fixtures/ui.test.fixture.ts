@@ -6,7 +6,7 @@ export const uiTest = baseTest.extend<{
 }>({
     pageManager: async ({ page, context, browser }, use, testInfo) => {
         const manager = new PageManager(page, context, browser, testInfo, baseTest);
-        await manager.init();
+        await manager.gotoHome();
         await use(manager);
     },
 });
