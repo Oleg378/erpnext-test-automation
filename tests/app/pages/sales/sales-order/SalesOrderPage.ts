@@ -1,6 +1,7 @@
 import {PageManager} from '../../../../tools/manager/PageManager';
 import {Customer, ErpDocument} from '../../../../tools/utils/record-types';
 import {BaseDocumentPage} from '../../BaseDocumentPage';
+import {Step} from '../../../../decorators/step.decorator';
 
 export class SalesOrderPage extends BaseDocumentPage {
     private static readonly GET_ITEMS_FROM_BUTTON: string = 'button:has-text(" Get Items From ")';
@@ -14,13 +15,34 @@ export class SalesOrderPage extends BaseDocumentPage {
         super(pageManager);
     }
 
-    async getItemsFromQuotation(quotation: ErpDocument, customer: Customer): Promise<SalesOrderPage> {
-        await this.pageManager.click(SalesOrderPage.GET_ITEMS_FROM_BUTTON);
-        await this.pageManager.click(SalesOrderPage.GET_FROM_QUOTATION_BUTTON);
-        await this.pageManager.fillInput(SalesOrderPage.QUOTATION_NAME_INPUT, quotation.name);
-        await this.pageManager.fillInput(SalesOrderPage.CUSTOMER_NAME_INPUT, customer.customer_name);
-        await this.pageManager.click(`input[data-item-name="${quotation.name}"]`); // quotation selector button
-        await this.pageManager.click(SalesOrderPage.GET_ITEMS_CONFIRM_BUTTON); // Get Items
+    @Step('Fill Items in Sales order Based on Quotation')
+    async getItemsFromQuotation(quotation: ErpDocument, customer: Customer): Promise<this> {
+        await this.pageManager.click(
+            SalesOrderPage.GET_ITEMS_FROM_BUTTON,
+            'Click on "Get Items From " button'
+        );
+        await this.pageManager.click(
+            SalesOrderPage.GET_FROM_QUOTATION_BUTTON,
+            'Click on "Quotation" option in context menu'
+        );
+        await this.pageManager.fillInput(
+            SalesOrderPage.QUOTATION_NAME_INPUT,
+            quotation.name,
+            'Fill Quotation Name'
+        );
+        await this.pageManager.fillInput(
+            SalesOrderPage.CUSTOMER_NAME_INPUT,
+            customer.customer_name,
+            'Fill Customer Name'
+        );
+        await this.pageManager.click(
+            `input[data-item-name="${quotation.name}"]`,
+            'Select found Quotation'
+        ); // quotation selector button
+        await this.pageManager.click(
+            SalesOrderPage.GET_ITEMS_CONFIRM_BUTTON,
+            'Click on "Confirm" button'
+        ); // Get Items
 
         return this;
     }
@@ -30,12 +52,12 @@ export class SalesOrderPage extends BaseDocumentPage {
         return this;
     }
 
-    async setDeliveryDate(date: Date): Promise<SalesOrderPage> {
+    async setDeliveryDate(date: Date): Promise<this> {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         const formattedDate = `${day}-${month}-${year}`;
-        await this.pageManager.fillDate(SalesOrderPage.DELIVERY_DATE_INPUT, formattedDate);
+        await this.pageManager.fillDate(SalesOrderPage.DELIVERY_DATE_INPUT, formattedDate, 'Fill delivery Date');
 
         return this;
     }

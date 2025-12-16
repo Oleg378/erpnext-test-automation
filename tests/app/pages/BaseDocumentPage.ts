@@ -2,6 +2,7 @@ import {BasePage} from './BasePage';
 import {PageManager} from '../../tools/manager/PageManager';
 import {ErpDocument} from '../../tools/utils/record-types';
 import {DocStatesEnum} from '../../tools/utils/enums/DocStatesEnum';
+import {Step} from '../../decorators/step.decorator';
 
 export class BaseDocumentPage extends BasePage{
     protected static readonly DOCUMENT_STATUS: string = '.indicator-pill:visible';
@@ -15,6 +16,7 @@ export class BaseDocumentPage extends BasePage{
         super(pageManager);
     }
 
+    @Step('Submit Document')
     async submitDocument(document: ErpDocument): Promise<this> {
         if (document.status !== DocStatesEnum.DRAFT) {
             throw new Error(
@@ -22,8 +24,14 @@ export class BaseDocumentPage extends BasePage{
                 `Actual status: ${document.status}`
             );
         }
-        await this.pageManager.click(BaseDocumentPage.SUBMIT_BUTTON) // click on submit button
-        await this.pageManager.click(BaseDocumentPage.YES_MODAL_WINDOW_BUTTON)
+        await this.pageManager.click(
+            BaseDocumentPage.SUBMIT_BUTTON,
+            'Click on "Submit" button'
+        );
+        await this.pageManager.click(
+            BaseDocumentPage.YES_MODAL_WINDOW_BUTTON,
+            'Click on "Yes" in the modal window'
+        );
 
         await this.pageManager.assertVisibleText(
             BaseDocumentPage.DOCUMENT_STATUS,
@@ -52,7 +60,8 @@ export class BaseDocumentPage extends BasePage{
 
     async getDocumentName(): Promise<string> {
         return await this.pageManager.getVisibleText(
-            BaseDocumentPage.DOCUMENT_NAME
+            BaseDocumentPage.DOCUMENT_NAME,
+            'Get document name from Header'
         );
     }
 }

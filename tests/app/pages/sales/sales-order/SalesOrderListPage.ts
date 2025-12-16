@@ -9,7 +9,10 @@ export class SalesOrderListPage extends BasePage{
     }
 
     async openNewSalesOrderPage(): Promise<NewSalesOrderPage> {
-        await this.pageManager.click(SalesOrderListPage.ADD_SALES_ORDER_BUTTON)
+        await this.pageManager.click(
+            SalesOrderListPage.ADD_SALES_ORDER_BUTTON,
+            'Click on "Add Sales Order" button'
+        );
         return new NewSalesOrderPage(this.pageManager);
     }
 }

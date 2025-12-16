@@ -3,6 +3,7 @@ import {Item} from '../../../../tools/utils/record-types';
 import {GridColEnum} from '../../../components/GridColEnum';
 import {TestDataFactory} from '../../../../tools/utils/TestDataFactory';
 import {BaseDocumentPage} from '../../BaseDocumentPage';
+import {Step} from '../../../../decorators/step.decorator';
 
 export enum QUOTATION_TO_TYPES {
     customer =  'Customer',
@@ -31,6 +32,7 @@ export class QuotationPage extends BaseDocumentPage {
         super(pageManager);
     }
 
+    @Step('Set Quotation recipient:')
     async setQuotationTo(quotationTo: QUOTATION_TO_TYPES, partyName: string): Promise<this> {
         await this.pageManager.fillInput(
             QuotationPage.QUOTATION_TO_TYPE_INPUT,
@@ -65,6 +67,7 @@ export class QuotationPage extends BaseDocumentPage {
         return this;
     }
 
+    @Step('Add Items to Quotation')
     async setItems(items: Map<Item, number>): Promise<this> {
         await this.deleteAllRowsInItemsGrid();
 
@@ -113,7 +116,8 @@ export class QuotationPage extends BaseDocumentPage {
         return this;
     }
 
-    async validateDataInGrid(items: Map<Item, number>): Promise<QuotationPage> {
+    @Step('Ensure Items are in Quotation')
+    async validateItemsInGrid(items: Map<Item, number>): Promise<this> {
         for (const [item, quantity] of items) {
             await this.pageManager.gridRow.interactWithCell(
                 item,
