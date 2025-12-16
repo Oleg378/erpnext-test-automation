@@ -84,7 +84,7 @@ export class SalesFlow {
     }
 
     /**
-     * Call this method inside each SalesFlow Action
+     * Call this method inside each User Action
      * before anything else to secure the state transitioning.
      * @private
      */
@@ -96,8 +96,11 @@ export class SalesFlow {
     }
 
     /**
-     * Sales User Action.
-     * @prop this.state must be INITIAL
+     * @tag User Action
+     * @role Sales
+     * @returns {Promise<this>} The current SalesFlow instance
+     * @precondition this.state must be 'INITIAL'
+     * @sideeffects Sets this.state to 'QUOTATION_DRAFT_CREATED'
      */
     @Step('Create Quotation Draft as Sales User')
     async createQuotationDraft(
@@ -135,8 +138,11 @@ export class SalesFlow {
     }
 
     /**
-     * Sales User Action.
-     * @prop this.state must be QUOTATION_DRAFT_CREATED
+     * @tag User Action
+     * @role Sales
+     * @returns {Promise<this>} The current SalesFlow instance
+     * @precondition this.state must be 'QUOTATION_DRAFT_CREATED'
+     * @sideeffects Sets this.state to 'QUOTATION_SUBMITTED'
      */
     @Step(`Submit Quotation as Sales User`)
     async submitQuotation(
@@ -165,8 +171,11 @@ export class SalesFlow {
     }
 
     /**
-     * Sales User Action.
-     * @prop this.state must be QUOTATION_SUBMITTED
+     * @tag User Action
+     * @role Sales
+     * @returns {Promise<this>} The current SalesFlow instance
+     * @precondition this.state must be 'QUOTATION_SUBMITTED'
+     * @sideeffects Sets this.state to 'ORDER_DRAFT_CREATED'
      */
     @Step(`Create Order Draft as Sales User`)
     async createOrderDraft(
