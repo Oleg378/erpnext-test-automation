@@ -203,7 +203,7 @@ export class ApiManager extends ReportManager {
         return obj && typeof obj.body === 'function';
     }
 
-    async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {
+    protected async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {
         return await this.test.step(description, async () => {
             try {
                 const response = await action();

@@ -157,7 +157,7 @@ export class PageManager extends ReportManager {
         }
     }
 
-    async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {
+    protected async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {
         return this.test.step(description, async () => {
             const result = await action();
             const screenshot = await this.page.screenshot();

@@ -16,5 +16,5 @@ export abstract class ReportManager {
         })
     }
 
-    abstract withStep<T>(description: string, action: () => Promise<T>): Promise<T>;
+    protected abstract withStep<T>(description: string, action: () => Promise<T>): Promise<T>;
 }
