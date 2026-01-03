@@ -1,5 +1,5 @@
 import {test} from '../fixtures/combined.test.fixture';
-import {SalesFlow, SalesFlowConfig} from '../app/flows/SalesFlow';
+import {SalesFlowInitializer, SalesFlowConfig} from '../app/flows/sales/SalesFlowInitializer';
 import {Customer, Item, Supplier} from '../tools/utils/record-types';
 import {TestDataFactory} from '../tools/utils/TestDataFactory';
 import {ItemGroupEnum} from '../tools/utils/enums/ItemGroupEnum';
@@ -8,8 +8,9 @@ import {UOMEnum} from '../tools/utils/enums/UOMEnum';
 
 const ITEMS: Map<Item, number> = new Map<Item, number>([
     [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'CASE_ROUTING'), 1],
-    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'SECURITY'), 1],
-    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'COMPANIES'), 8]
+    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'SECURITY'), 2],
+    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'COMPANIES'), 3],
+    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS,  UOMEnum.UNIT, 'MESSAGES_FOR_PROPOSAL'), 5],
 ]);
 const SUPPLIER: Supplier = {
     supplier_name: 'OLEKSI&MAKS'
@@ -24,20 +25,21 @@ const FLOW_CONFIG: SalesFlowConfig = {
     customer: CUSTOMER
 }
 
-let salesFlow: SalesFlow;
-test.beforeAll(async ({apiManager}) => {
-    salesFlow = await SalesFlow.create(apiManager, FLOW_CONFIG)
-});
-
-test.describe('Sales Process: Quotation → Order → Warehouse → Shipment → Accounting @sales', () => {
+test.describe(
+    'Sales Process: Quotation → Order → Warehouse → Shipment → Accounting @sales',
+    () => {
     test.describe.configure({ mode: 'serial' });
-    test('Create Quotation for Customer (Draft)', async ({apiManager, pageManager}) => {
-        await salesFlow.sales.createQuotationDraft(apiManager, pageManager);
-    })
-    test('Submit Quotation', async ({apiManager, pageManager}) => {
-        await salesFlow.sales.submitQuotation(apiManager, pageManager);
-    })
-    test('Create Sales Order (Draft)', async ({apiManager, pageManager}) => {
-        await salesFlow.sales.createOrderDraft(apiManager, pageManager);
+    test('Quotation -> Sales Order -> Sales Invoice', async ({apiManager, pageManager}) => {
+        await SalesFlowInitializer
+            .creteFlowWithQuotation(apiManager, pageManager, FLOW_CONFIG)
+            .submitQuotation(apiManager, pageManager)
+            .createAndSubmitSalesOrder(apiManager, pageManager)
+            .createMaterialRequest(apiManager, pageManager)
+            .createPurchaseOrder(apiManager, pageManager)
+            .createPurchaseReceipt(apiManager, pageManager)
+            .createDeliveryNote(apiManager, pageManager)
+            .createSalesInvoice(apiManager, pageManager)
+            .createPaymentEntry(apiManager, pageManager)
+            .executeAll();
     })
 })

@@ -144,6 +144,13 @@ export class PageManager extends ReportManager {
         await this.gotoHome();
     }
 
+    async reopenBrowser(): Promise<void> {
+        await this.page.close();
+        this.context = await this.browser.newContext();
+        this.page = await this.context.newPage();
+        await this.gotoHome();
+    }
+
     protected async withStep<T>(description: string, action: () => Promise<T>): Promise<T> {
         return this.test.step(description, async () => {
             const result = await action();
