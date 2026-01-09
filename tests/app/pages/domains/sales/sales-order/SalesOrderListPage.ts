@@ -1,5 +1,5 @@
-import {BasePage} from '../../BasePage';
-import {PageManager} from '../../../../tools/manager/PageManager';
+import {BasePage} from '../../../BasePage';
+import {PageManager} from '../../../../../tools/manager/PageManager';
 import {NewSalesOrderPage} from './NewSalesOrderPage';
 
 export class SalesOrderListPage extends BasePage{

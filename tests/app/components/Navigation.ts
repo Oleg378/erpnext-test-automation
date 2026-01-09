@@ -5,6 +5,7 @@ import {AccountingPage} from '../pages/navigation/AccountingPage';
 import {PayablesPage} from '../pages/navigation/PayablesPage';
 import {SellingPage} from '../pages/navigation/SellingPage';
 import {StockPage} from '../pages/navigation/StockPage';
+import {BuyingPage} from '../pages/navigation/BuyingPage';
 
 export interface NavigationTarget<T extends AbstractNavigationPage> {
     readonly button: string;
@@ -38,7 +39,12 @@ export const Navigation = {
         visibleText: 'Total Stock Value',
         returnType: StockPage
     } as NavigationTarget<StockPage>,
-    // TODO implement missing navigation elements if needed:
+    BUYING: {
+        button: 'a.item-anchor[title="Buying"]',
+        visibleText: 'Purchase Order Trends',
+        returnType: BuyingPage
+    } as NavigationTarget<BuyingPage>,
+    // implement missing navigation elements if needed:
     // RECEIVABLES: {
     //     locator: 'a.item-anchor[title="Receivables"]',
     //     returnType: ReceivablesPage
@@ -46,10 +52,6 @@ export const Navigation = {
     // FINANCIAL_REPORTS: {
     //     locator: 'a.item-anchor[title="Financial Reports"]',
     //     returnType: FinancialReportsPage
-    // } as const,
-    // BUYING: {
-    //     locator: 'a.item-anchor[title="Buying"]',
-    //     returnType: BuyingPage
     // } as const,
     // ASSETS: {
     //     locator: 'a.item-anchor[title="Assets"]',

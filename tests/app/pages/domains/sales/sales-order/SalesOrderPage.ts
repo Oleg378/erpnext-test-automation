@@ -1,8 +1,8 @@
-import {PageManager} from '../../../../tools/manager/PageManager';
-import {ErpDocument} from '../../../../tools/utils/record-types';
-import {BaseDocumentPage} from '../../BaseDocumentPage';
-import {Step} from '../../../../decorators/step.decorator';
-import {ItemsPickerModal} from '../../../components/ItemsPickerModal';
+import {PageManager} from '../../../../../tools/manager/PageManager';
+import {ErpDocument} from '../../../../../tools/utils/record-types';
+import {BaseDocumentPage} from '../../../BaseDocumentPage';
+import {Step} from '../../../../../decorators/step.decorator';
+import {ItemsPickerModal} from '../../../../components/ItemsPickerModal';
 
 export class SalesOrderPage extends BaseDocumentPage {
     private static readonly DELIVERY_DATE_INPUT: string = 'input[data-fieldname="delivery_date"]:visible';

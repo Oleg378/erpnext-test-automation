@@ -1,7 +1,7 @@
 import {AbstractNavigationPage} from './AbstractNavigationPage';
 import {PageManager} from '../../../tools/manager/PageManager';
-import {QuotationListPage} from '../sales/quotation/QuotationListPage';
-import {SalesOrderListPage} from '../sales/sales-order/SalesOrderListPage';
+import {QuotationListPage} from '../domains/sales/quotation/QuotationListPage';
+import {SalesOrderListPage} from '../domains/sales/sales-order/SalesOrderListPage';
 
 export class SellingPage extends AbstractNavigationPage {
     private static readonly QUOTATION_BUTTON: string = 'a[title="Quotation"]';

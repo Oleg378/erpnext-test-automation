@@ -1,9 +1,9 @@
-import {PageManager} from '../../../../tools/manager/PageManager';
-import {Item} from '../../../../tools/utils/record-types';
-import {GridColEnum} from '../../../components/GridColEnum';
-import {TestDataFactory} from '../../../../tools/utils/TestDataFactory';
-import {BaseDocumentPage} from '../../BaseDocumentPage';
-import {Step} from '../../../../decorators/step.decorator';
+import {PageManager} from '../../../../../tools/manager/PageManager';
+import {Item} from '../../../../../tools/utils/record-types';
+import {GridColEnum} from '../../../../components/GridColEnum';
+import {TestDataFactory} from '../../../../../tools/utils/TestDataFactory';
+import {BaseDocumentPage} from '../../../BaseDocumentPage';
+import {Step} from '../../../../../decorators/step.decorator';
 
 export enum QUOTATION_TO_TYPES {
     customer =  'Customer',

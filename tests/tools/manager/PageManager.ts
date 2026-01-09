@@ -48,6 +48,10 @@ export class PageManager extends ReportManager {
         })
     }
 
+    async pressEscape(): Promise<void> {
+        await this.page.keyboard.press('Escape', {delay: 100});
+    }
+
     async fillDate(input: string, value: string, description?: string): Promise<void> {
         return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
             const locator: Locator = this.ensureIsLocator(input);
@@ -161,5 +165,9 @@ export class PageManager extends ReportManager {
             });
             return result;
         });
+    }
+
+    async closeBrowser(): Promise<void> {
+        await this.page.close();
     }
 }

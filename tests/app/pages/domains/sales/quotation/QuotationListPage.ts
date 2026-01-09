@@ -1,8 +1,8 @@
-import {BasePage} from '../../BasePage';
-import {PageManager} from '../../../../tools/manager/PageManager';
+import {BasePage} from '../../../BasePage';
+import {PageManager} from '../../../../../tools/manager/PageManager';
 import {NewQuotationPage} from './NewQuotationPage';
 import {QuotationPage} from './QuotationPage';
-import {Step} from '../../../../decorators/step.decorator';
+import {Step} from '../../../../../decorators/step.decorator';
 
 export class QuotationListPage extends BasePage{
     private static readonly ADD_QUOTATION_BUTTON: string = 'button[data-label="Add Quotation"]';

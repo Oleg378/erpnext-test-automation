@@ -9,12 +9,12 @@ import {TestDataFactory} from '../../../tools/utils/TestDataFactory';
 import {ItemGroupEnum} from '../../../tools/utils/enums/ItemGroupEnum';
 import {UOMEnum} from '../../../tools/utils/enums/UOMEnum';
 import {ApiClient} from '../../api/ApiClient';
-import {ORDER_TYPES, QUOTATION_TO_TYPES, QuotationPage} from '../../pages/sales/quotation/QuotationPage';
+import {ORDER_TYPES, QUOTATION_TO_TYPES, QuotationPage} from '../../pages/domains/sales/quotation/QuotationPage';
 import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
 import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
-import {NewQuotationPage} from '../../pages/sales/quotation/NewQuotationPage';
+import {NewQuotationPage} from '../../pages/domains/sales/quotation/NewQuotationPage';
 import {Step} from '../../../decorators/step.decorator';
-import {QuotationStep} from './QuotationStep';
+import {QuotationAction} from './QuotationAction';
 import {SalesFlow} from './SalesFlow';
 import {LogInUtils} from '../../../tools/utils/LogInUtils';
 
@@ -31,6 +31,11 @@ export interface SalesFlowContext {
     quotation?: ErpDocument;
     salesOrder?: ErpDocument;
     salesInvoice?: ErpDocument;
+    materialRequest?: ErpDocument;
+    purchaseOrder?: ErpDocument;
+    purchaseReceipt?: ErpDocument;
+    deliveryNote?: ErpDocument;
+    paymentEntry?: ErpDocument;
 }
 
 export class SalesFlowInitializer extends SalesFlow {
@@ -50,27 +55,20 @@ export class SalesFlowInitializer extends SalesFlow {
         customer: SalesFlowInitializer.DEFAULT_CUSTOMER,
     }
 
-    private constructor(config: SalesFlowConfig) {
-        super({
+    private constructor(config: SalesFlowConfig, apiManager: ApiManager, pageManager: PageManager) {
+        const context = {
             items: config.items || SalesFlowInitializer.DEFAULT_ITEMS,
             supplier: config.supplier || SalesFlowInitializer.DEFAULT_SUPPLIER,
             customer: config.customer || SalesFlowInitializer.DEFAULT_CUSTOMER,
-        });
+        };
+        super(context, [], apiManager, pageManager);
     }
 
     @Step('Initiate test data')
-    private async init(apiManager: ApiManager) {
-        await ApiClient.postRetrieveAdminCookies(apiManager, false)
-        await DataUtils.ensureItemsWithPricingAndSupplier(apiManager, Array.from(this.context.items.keys()), this.context.supplier, false);
-        await DataUtils.ensureCustomerExists(apiManager, this.context.customer, false);
-    }
-
-    private async create(
-        apiManager: ApiManager,
-        pageManager: PageManager,
-    ): Promise<void> {
-        await this.init(apiManager);
-        await this.createQuotationDraft(apiManager, pageManager)
+    private async init() {
+        await ApiClient.postRetrieveAdminCookies(this.apiManager, false)
+        await DataUtils.ensureItemsWithPricingAndSupplier(this.apiManager, Array.from(this.context.items.keys()), this.context.supplier, false);
+        await DataUtils.ensureCustomerExists(this.apiManager, this.context.customer, false);
     }
 
     /**
@@ -84,26 +82,28 @@ export class SalesFlowInitializer extends SalesFlow {
         apiManager: ApiManager,
         pageManager: PageManager,
         config?: SalesFlowConfig
-    ): QuotationStep {
-        const salesFlow = new SalesFlowInitializer(config || SalesFlowInitializer.DEFAULT_CONFIG);
+    ): QuotationAction {
+        const salesFlow = new SalesFlowInitializer(
+            config || SalesFlowInitializer.DEFAULT_CONFIG,
+            apiManager,
+            pageManager
+        );
+        salesFlow.addAction(() => salesFlow.init());
+        salesFlow.addAction(() => salesFlow.createQuotationDraft());
 
-        salesFlow.addAction(() => salesFlow.create(apiManager, pageManager));
-        return new QuotationStep(salesFlow);
+        return new QuotationAction(salesFlow.context, salesFlow.pendingActions, apiManager, pageManager);
     }
 
-    @Step('Create Quotation Draft as Sales User')
-    private async createQuotationDraft(
-        apiManager: ApiManager,
-        pageManager: PageManager
-    ): Promise<this> {
+    @Step('Sales User: Create Quotation Draft')
+    private async createQuotationDraft(): Promise<void> {
         if (this.context.quotation) {
             throw new Error('Quotation already exists!');
         }
         const homePage: HomePage = (await LogInUtils.ensureUserLoggedIn(
-            apiManager,
-            pageManager,
+            this.apiManager,
+            this.pageManager,
             ProfileRoles.Sales,
-            SalesFlowInitializer.SALES_USERNAME
+            SalesFlow.SALES_USERNAME
         )).homePage;
         const newQuotationPage: NewQuotationPage = await homePage.navigateTo(Navigation.SELLING)
             .then(sellingPage =>
@@ -124,6 +124,5 @@ export class SalesFlowInitializer extends SalesFlow {
             status:  DocStatesEnum.DRAFT,
             doctype: DocTypesEnum.QUOTATION
         }
-        return this;
     }
 }

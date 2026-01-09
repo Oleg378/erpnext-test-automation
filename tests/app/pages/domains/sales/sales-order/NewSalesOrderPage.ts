@@ -1,4 +1,4 @@
-import {PageManager} from '../../../../tools/manager/PageManager';
+import {PageManager} from '../../../../../tools/manager/PageManager';
 import {SalesOrderPage} from './SalesOrderPage';
 
 export class NewSalesOrderPage extends SalesOrderPage {

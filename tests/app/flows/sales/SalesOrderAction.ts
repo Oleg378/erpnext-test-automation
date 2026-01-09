@@ -1,4 +1,3 @@
-import {QuotationStep} from './QuotationStep';
 import {SalesFlow} from './SalesFlow';
 import {Step} from '../../../decorators/step.decorator';
 import {ApiManager} from '../../../tools/manager/ApiManager';
@@ -6,16 +5,21 @@ import {PageManager} from '../../../tools/manager/PageManager';
 import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
 import {LoggedInUser, LogInUtils} from '../../../tools/utils/LogInUtils';
 import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {NewSalesOrderPage} from '../../pages/sales/sales-order/NewSalesOrderPage';
+import {NewSalesOrderPage} from '../../pages/domains/sales/sales-order/NewSalesOrderPage';
 import {Navigation} from '../../components/Navigation';
-import {SalesOrderPage} from '../../pages/sales/sales-order/SalesOrderPage';
+import {SalesOrderPage} from '../../pages/domains/sales/sales-order/SalesOrderPage';
 import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
-import {ProcurementStep} from './ProcurementStep';
+import {ProcurementAction} from './ProcurementAction';
+import {SalesFlowContext} from './SalesFlowInitializer';
 
-export class SalesOrderStep extends SalesFlow {
-    constructor(flow: QuotationStep) {
-        super(flow.getContext());
-        this.pendingActions = [...flow.getPendingActions()]
+export class SalesOrderAction extends SalesFlow {
+    constructor(
+        context: SalesFlowContext,
+        pendingActions: Array<() => Promise<void>>,
+        apiManager: ApiManager,
+        pageManager: PageManager
+    ) {
+        super(context, pendingActions, apiManager, pageManager);
     }
 
     /**
@@ -23,28 +27,23 @@ export class SalesOrderStep extends SalesFlow {
      * @role Sales
      * @returns new ProcurementStep
      */
-    createAndSubmitSalesOrder(
-        apiManager: ApiManager,
-        pageManager: PageManager
-    ): ProcurementStep {
-        this.addAction(() => this.executeCreateOrderAndSubmit(apiManager, pageManager));
-        return new ProcurementStep(this);
+    createAndSubmitSalesOrder(): ProcurementAction {
+        this.addAction(() => this.executeCreateOrderAndSubmit());
+        return new ProcurementAction(this.context, this.pendingActions, this.apiManager, this.pageManager);
     }
 
-    @Step(`Complete Sales Order Creation as Sales User`)
+    @Step('Sales User: Complete Sales Order Creation')
     private async executeCreateOrderAndSubmit(
-        apiManager: ApiManager,
-        pageManager: PageManager
     ): Promise<void> {
         if (this.context.quotation?.status != DocStatesEnum.OPEN) {
             throw new Error('Cannot create sales order: quotation is undefined or not submitted!');
         }
         const loggedInUser: LoggedInUser = await LogInUtils.ensureUserLoggedIn(
-            apiManager,
-            pageManager,
+            this.apiManager,
+            this.pageManager,
             ProfileRoles.Sales,
             SalesFlow.SALES_USERNAME
-        )
+        );
         const newSalesOrderPage: NewSalesOrderPage = await loggedInUser
             .homePage
             .navigateTo(Navigation.SELLING)

@@ -16,8 +16,13 @@ export class BaseDocumentPage extends BasePage {
     private static readonly SUBMITTED_STATUSES: Map<DocTypesEnum, DocStatesEnum> = new Map([
         [DocTypesEnum.QUOTATION, DocStatesEnum.OPEN],
         [DocTypesEnum.SALES_ORDER, DocStatesEnum.TO_DELIVER_AND_BILL],
-        [DocTypesEnum.SALES_INVOICE, DocStatesEnum.UNPAID]
-]);
+        [DocTypesEnum.SALES_INVOICE, DocStatesEnum.UNPAID],
+        [DocTypesEnum.MATERIAL_REQUEST, DocStatesEnum.PENDING],
+        [DocTypesEnum.PURCHASE_ORDER, DocStatesEnum.TO_RECEIVE_AND_BILL],
+        [DocTypesEnum.PURCHASE_RECEIPT, DocStatesEnum.TO_BILL],
+        [DocTypesEnum.DELIVERY_NOTE, DocStatesEnum.TO_BILL],
+        [DocTypesEnum.PAYMENT_ENTRY, DocStatesEnum.SUBMITTED],
+    ]);
 
     constructor(pageManager: PageManager) {
         super(pageManager);
@@ -63,6 +68,7 @@ export class BaseDocumentPage extends BasePage {
         await this.pageManager.click(
             BaseDocumentPage.SAVE_DOCUMENT_BUTTON,
             'Save document');
+        //await this.pageManager.refresh();
         await this.pageManager.assertVisibleText(
             BaseDocumentPage.DOCUMENT_STATUS,
             DocStatesEnum.DRAFT,
