@@ -78,7 +78,7 @@ export class SalesFlowInitializer extends SalesFlow {
      * @returns new QuotationStep
      *
      */
-    static creteFlowWithQuotation(
+    static createFlowWithQuotation(
         apiManager: ApiManager,
         pageManager: PageManager,
         config?: SalesFlowConfig

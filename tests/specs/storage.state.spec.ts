@@ -11,6 +11,7 @@ test.describe('RESTORE SESSION DEMO: @sessions', () => {
             apiManager,
             pageManager,
             profileRole)
+        await pageManager.closePage();
     });
 
     test('Log in as ABOBA_BOBA and store sessionContext', async ({pageManager, apiManager}) => {
@@ -19,6 +20,7 @@ test.describe('RESTORE SESSION DEMO: @sessions', () => {
             pageManager,
             profileRole,
             'ABOBA_BOBA')
+        await pageManager.closePage();
     });
 
     test('Log in as ABOBA_BOBA via LogInUtils & storageState', async ({pageManager, apiManager}) => {
@@ -27,5 +29,6 @@ test.describe('RESTORE SESSION DEMO: @sessions', () => {
             pageManager,
             profileRole,
             'ABOBA_BOBA')
+        await pageManager.closePage();
     });
 });

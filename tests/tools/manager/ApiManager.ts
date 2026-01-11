@@ -86,6 +86,19 @@ export class ApiManager extends ReportManager {
         return response.json()
     }
 
+    async getRecord(
+        endpoint: string,
+        recordName: string,
+        enableSteps: boolean = true
+    ): Promise<Serializable > {
+        const response = await this.get(
+            `${endpoint}/${recordName}`,
+            { enableSteps: enableSteps, description: `Get ${endpoint}/${recordName}`}
+        );
+        await this.expectResponseToBeOk(response);
+        return await response.json();
+    }
+
     async post(
         endpoint: string,
         data: Serializable,

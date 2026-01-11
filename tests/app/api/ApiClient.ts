@@ -8,6 +8,10 @@ import {
     CUSTOMER_RESPONSE_SCHEMA,
     Item,
     ITEM_RESPONSE_SCHEMA,
+    QUOTATION_SCHEMA,
+    QuotationResponse,
+    SALES_ORDER_SCHEMA,
+    SalesOrderResponse,
     Supplier,
     SUPPLIER_RESPONSE_SCHEMA,
     User,
@@ -118,7 +122,7 @@ export abstract class ApiClient {
             `"supplier_type" should be "${result.request_body.customer_type}"`
         ).toBe(result.request_body.customer_type);
 
-        return  customer;
+        return customer;
     }
 
     static async postCreateNewItem(
@@ -233,6 +237,32 @@ export abstract class ApiClient {
             price_list_rate: parsedResponse.data.price_list_rate,
             currency: parsedResponse.data.currency
         }
+    }
+
+    static async getSalesOrder(
+        documentName: string,
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<SalesOrderResponse> {
+        const result = await apiManager.getRecord(
+            '/api/resource/Sales Order',
+            documentName,
+            enableSteps
+        );
+        return SALES_ORDER_SCHEMA.parse(result);
+    }
+
+    static async getQuotation(
+        documentName: string,
+        apiManager: ApiManager,
+        enableSteps: boolean = true
+    ): Promise<QuotationResponse> {
+        const result = await apiManager.getRecord(
+            '/api/resource/Quotation',
+            documentName,
+            enableSteps
+        );
+        return QUOTATION_SCHEMA.parse(result);
     }
 
     static async getListOfCompanies(

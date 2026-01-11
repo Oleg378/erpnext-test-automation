@@ -25,6 +25,17 @@ export abstract class SalesFlow {
             await action();
         }
         this.pendingActions = [];
+        await this.pageManager.closePage();
         return this
+    }
+
+    setManager(apiManager: ApiManager, pageManager: PageManager): this {
+        this.pageManager = pageManager;
+        this.apiManager = apiManager;
+        return this;
+    }
+
+    getContext(): SalesFlowContext {
+        return this.context;
     }
 }

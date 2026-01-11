@@ -6,7 +6,7 @@ import {ItemGroupEnum} from '../../tools/utils/enums/ItemGroupEnum';
 import {UOMEnum} from '../../tools/utils/enums/UOMEnum';
 
 const supplier: Supplier = {
-    supplier_name: `supplierbeforeAll_${TestDataFactory.generateUID()}`
+    supplier_name: `supplier4item.spec_${TestDataFactory.generateUID()}`
 }
 const item: Item = TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.KG)
 

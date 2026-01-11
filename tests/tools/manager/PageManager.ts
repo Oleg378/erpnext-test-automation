@@ -49,7 +49,7 @@ export class PageManager extends ReportManager {
     }
 
     async pressEscape(): Promise<void> {
-        await this.page.keyboard.press('Escape', {delay: 100});
+        await this.page.keyboard.press('Escape', {delay: 200});
     }
 
     async fillDate(input: string, value: string, description?: string): Promise<void> {
@@ -167,7 +167,7 @@ export class PageManager extends ReportManager {
         });
     }
 
-    async closeBrowser(): Promise<void> {
+    async closePage(): Promise<void> {
         await this.page.close();
     }
 }

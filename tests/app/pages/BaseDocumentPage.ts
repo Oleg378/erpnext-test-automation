@@ -6,7 +6,7 @@ import {Step} from '../../decorators/step.decorator';
 import {DocTypesEnum} from '../../tools/utils/enums/DocTypesEnum';
 
 export class BaseDocumentPage extends BasePage {
-    protected static readonly DOCUMENT_STATUS: string = '.indicator-pill:visible';
+    public static readonly DOCUMENT_STATUS: string = '.indicator-pill:visible';
     private static readonly SAVE_DOCUMENT_BUTTON: string = 'button[data-label="Save"]:visible';
     private static readonly DOCUMENT_NAME: string = '#navbar-breadcrumbs .disabled';
     private static readonly SUBMIT_BUTTON: string = '[data-label="Submit"]:visible';
@@ -80,6 +80,13 @@ export class BaseDocumentPage extends BasePage {
         return await this.pageManager.getVisibleText(
             BaseDocumentPage.DOCUMENT_NAME,
             'Get document name from Header'
+        );
+    }
+
+    async getDocumentStatus(): Promise<string> {
+        return await this.pageManager.getVisibleText(
+            BaseDocumentPage.DOCUMENT_STATUS,
+            'Get document status from Header'
         );
     }
 }

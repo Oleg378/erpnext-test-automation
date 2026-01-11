@@ -8,4 +8,5 @@ export enum DocStatesEnum {
     PENDING = 'Pending', // Material Request
     TO_RECEIVE_AND_BILL = 'To Receive and Bill', // Purchase Order
     TO_BILL = 'To Bill', // Purchase Recept, Delivery Note
+    COMPLETED =  'Completed', // final status for Sales Order
 }
