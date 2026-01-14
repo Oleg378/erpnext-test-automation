@@ -13,7 +13,7 @@ export default defineConfig({
     use: {
         headless: process.env.HEADLESS !== 'false',
         viewport: { width: 1280, height: 720 },
-        trace: 'on', // 'retain-on-failure
+        trace: 'retain-on-failure',
         baseURL: process.env.BASE_URL || 'http://localhost:8081/',
         screenshot: 'only-on-failure',
     },
