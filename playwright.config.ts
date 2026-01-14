@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+    timeout: 120000,
     testDir: './tests',
     fullyParallel: true,
     retries: 0,
@@ -10,10 +11,11 @@ export default defineConfig({
         ['allure-playwright']
     ],
     use: {
-        headless: false,
+        headless: process.env.HEADLESS !== 'false',
         viewport: { width: 1280, height: 720 },
         trace: 'on', // 'retain-on-failure
-        baseURL: 'http://localhost:8081/',
+        baseURL: process.env.BASE_URL || 'http://localhost:8081/',
+        screenshot: 'only-on-failure',
     },
     projects: [
         {
@@ -22,11 +24,5 @@ export default defineConfig({
                 browserName: 'chromium',
             },
         },
-        {
-            name: 'firefox',
-            use: {
-                browserName: 'firefox',
-                },
-        }
     ],
 });
