@@ -8,7 +8,6 @@ import {Navigation} from '../../components/Navigation';
 import {TestDataFactory} from '../../../tools/utils/TestDataFactory';
 import {ItemGroupEnum} from '../../../tools/utils/enums/ItemGroupEnum';
 import {UOMEnum} from '../../../tools/utils/enums/UOMEnum';
-import {ApiClient} from '../../api/ApiClient';
 import {ORDER_TYPES, QUOTATION_TO_TYPES, QuotationPage} from '../../pages/domains/sales/quotation/QuotationPage';
 import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
 import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
@@ -66,9 +65,8 @@ export class SalesFlowInitializer extends SalesFlow {
 
     @Step('Initiate test data')
     private async init() {
-        await ApiClient.postRetrieveAdminCookies(this.apiManager, false)
-        await DataUtils.ensureItemsWithPricingAndSupplier(this.apiManager, Array.from(this.context.items.keys()), this.context.supplier, false);
-        await DataUtils.ensureCustomerExists(this.apiManager, this.context.customer, false);
+        await DataUtils.ensureItemsWithPricingAndSupplier(this.apiManager, Array.from(this.context.items.keys()), this.context.supplier);
+        await DataUtils.ensureCustomerExists(this.apiManager, this.context.customer);
     }
 
     /**
