@@ -13,16 +13,15 @@ import {ProcurementAction} from '../../app/flows/sales/ProcurementAction';
 
 
 const ITEMS: Map<Item, number> = new Map<Item, number>([
-    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'CASE_ROUTING'), 1],
-    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'SECURITY'), 2],
-    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'COMPANIES'), 3],
-    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'MESSAGES_FOR_PROPOSAL'), 5],
+    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'THE_RING'), 1],
+    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'AXE'), 2],
+    [TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.UNIT, 'ARROW'), 3],
 ]);
 const SUPPLIER: Supplier = {
-    supplier_name: 'OLEKSI&MAKS'
+    supplier_name: 'SCIENCE&FICTION'
 };
 const CUSTOMER: Customer = {
-    customer_name: 'Alina',
+    customer_name: 'Reader',
     customer_type: 'Company'
 };
 const FLOW_CONFIG: SalesFlowConfig = {
