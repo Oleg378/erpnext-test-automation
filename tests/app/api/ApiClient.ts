@@ -18,6 +18,7 @@ import {
     USER_RESPONSE_SCHEMA
 } from '../../tools/utils/record-types';
 import {z} from 'zod';
+import {Step} from '../../decorators/step.decorator';
 
 export abstract class ApiClient {
     static async postRetrieveAdminCookies(
@@ -371,6 +372,7 @@ export abstract class ApiClient {
         ).length > 0;
     }
 
+    @Step('Update Item Supplier')
     static async putUpdateItemSupplier(
         item: Item,
         supplier: Supplier,

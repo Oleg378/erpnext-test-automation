@@ -2,9 +2,11 @@ import {Customer, Item, Supplier, User} from './record-types';
 import {ApiClient} from '../../app/api/ApiClient';
 import {ApiManager} from '../manager/ApiManager';
 import {TestDataFactory} from './TestDataFactory';
+import {Step} from '../../decorators/step.decorator';
 
 export abstract class DataUtils {
 
+    @Step('ensure Items have Pricing And Supplier')
     static async ensureItemsWithPricingAndSupplier(
         apiManager: ApiManager,
         items: Item[],
@@ -20,7 +22,7 @@ export abstract class DataUtils {
         }
         return items;
     }
-
+    @Step('Ensure Supplier Exists')
     static async ensureSupplierExists(
         apiManager: ApiManager,
         supplier: Supplier,
@@ -58,6 +60,7 @@ export abstract class DataUtils {
         );
     }
 
+    @Step('Ensure Item Buying Price Exists')
     static async ensureItemBuyingPriceExists(
         apiManager: ApiManager,
         item: Item,
@@ -73,6 +76,7 @@ export abstract class DataUtils {
         }
     }
 
+    @Step('Ensure Item Selling Price Exists')
     static async ensureItemSellingPriceExists(
         apiManager: ApiManager,
         item: Item,
@@ -88,6 +92,7 @@ export abstract class DataUtils {
         }
     }
 
+    @Step('Ensure Customer Exists')
     static async ensureCustomerExists(
         apiManager: ApiManager,
         customer: Customer,
@@ -99,6 +104,7 @@ export abstract class DataUtils {
         }
     }
 
+    @Step('Ensure User Exists')
     static async ensureUserExists(
         apiManager: ApiManager,
         user: User,
@@ -109,6 +115,8 @@ export abstract class DataUtils {
             await ApiClient.postCreateNewUser(user, apiManager, enableSteps);
         }
     }
+
+    @Step('Ensure Item Exists')
     static async ensureItemExists(
         apiManager: ApiManager,
         item: Item,
