@@ -107,29 +107,25 @@ export class QuotationPage extends BaseDocumentPage {
     }
 
     async updateItemQuantity(item: Item, quantity: number): Promise<this> {
-        await this.pageManager.gridRow.interactWithCell(
+        await this.pageManager.gridRow.fillCell(
             item,
             GridColEnum.QUANTITY,
-            this.pageManager.fillInput.bind(this.pageManager),
-            quantity.toString()
-        );
+            quantity.toString());
         return this;
     }
 
     @Step('Ensure Items are in Quotation')
     async validateItemsInGrid(items: Map<Item, number>): Promise<this> {
         for (const [item, quantity] of items) {
-            await this.pageManager.gridRow.interactWithCell(
+            await this.pageManager.gridRow.assertCellContent(
                 item,
                 GridColEnum.QUANTITY,
-                this.pageManager.assertVisibleText.bind(this.pageManager),
                 quantity.toString()
             );
 
-            await this.pageManager.gridRow.interactWithCell(
+            await this.pageManager.gridRow.assertCellContent(
                 item,
                 GridColEnum.AMOUNT,
-                this.pageManager.assertVisibleText.bind(this.pageManager),
                 `₪ ${QuotationPage.splitNumberByCommas(quantity * TestDataFactory.DEFAULT_PRICE.selling)}.00`
             ); // inaccurate
         }

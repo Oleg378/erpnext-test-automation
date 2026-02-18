@@ -31,21 +31,26 @@ export class PageManager extends ReportManager {
         });
     }
 
-    async fillInput(input: string | Locator, value: string, description?: string): Promise<void> {
+    async fillInput(input: string, value: string, description?: string): Promise<void> {
         return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
-            const locator: Locator = this.ensureIsLocator(input);
+            const locator: Locator = this.page.locator(input).first();
+            await locator.fill(value);
+        });
+    }
 
-            // there are input cells in the grid, but they are type of <div>; this 'if - else' dedicated to solve this problem:
-            const isDiv = await locator.evaluate(el => el.tagName === 'DIV');
-            if (isDiv) {
-                await locator.click();
-                await this.page.keyboard.press('Backspace'); // Clear existing content
-                await this.page.keyboard.type(value); // Type new value
-                await this.page.keyboard.press('Tab'); // Moves to next field
-            } else {
-                await locator.fill(value);
-            }
-        })
+    private async fillDivInput(input: Locator, value: string): Promise<void> {
+        return this.withStep(`Fill cell input with "${value}"`,  async () => {
+            await input.click();
+            await this.page.keyboard.press('Backspace'); // Clear existing content
+            await this.page.keyboard.type(value); // Type new value
+            await this.page.keyboard.press('Tab'); // Moves to next field
+        });
+    }
+
+    private async assertCellText(cell: Locator, text: string): Promise<void> {
+        return this.withStep(`Assert cell has text: "${text}"`, async () => {
+            await expect(cell).toHaveText(text);
+        });
     }
 
     async pressEscape(): Promise<void> {
@@ -54,19 +59,18 @@ export class PageManager extends ReportManager {
 
     async fillDate(input: string, value: string, description?: string): Promise<void> {
         return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
-            const locator: Locator = this.ensureIsLocator(input);
+            const locator: Locator = this.page.locator(input).first();
             await locator.click();
             await locator.pressSequentially(value);
-            // type value
             await this.page.keyboard.press('Enter');
-        })
+        });
     }
 
     async selectOptionByVisibleText(select: string, value: string, description?: string): Promise<void> {
         return this.withStep(description || `Select ${value} in "${select}"`, async () => {
             const locator: Locator = this.page.locator(select);
             await locator.selectOption(value);
-        })
+        });
     }
 
     private async findCellByItemCode(item: Item, cellDataFieldName: GridColEnum): Promise<Locator> {
@@ -74,34 +78,30 @@ export class PageManager extends ReportManager {
             .locator(`xpath=./ancestor::*[contains(@class, "grid-row")][1]//*[@data-fieldname="${cellDataFieldName}"]`).first();
     }
 
-    private ensureIsLocator(element: string| Locator): Locator {
-        let locator: Locator;
-        if (typeof element === "string") {
-            locator = this.page.locator(element).first();
-        } else {
-            locator = element;
-        }
-        return locator;
-    }
-
     gridRow = {
-        interactWithCell: async (
+        fillCell: async (
             item: Item,
             cellColumnFieldName: GridColEnum,
-            // you can use assertVisibleText() or fillInput() as params for interactWithCell()
-            interaction: (element: Locator, text: string) => Promise<void>,
-            textForInteraction: string
+            value: string
         ): Promise<void> => {
             const cell: Locator = await this.findCellByItemCode(item, cellColumnFieldName);
-            await interaction(cell, textForInteraction);
+            await this.fillDivInput(cell, value);
+        },
+        assertCellContent: async (
+            item: Item,
+            cellColumnFieldName: GridColEnum,
+            value: string
+        ): Promise<void> => {
+            const cell: Locator = await this.findCellByItemCode(item, cellColumnFieldName);
+            await this.assertCellText(cell, value);
         }
     }
 
-    async assertVisibleText(element: string | Locator, text: string, description?: string): Promise<void> {
+    async assertVisibleText(element: string, text: string, description?: string): Promise<void> {
         return this.withStep(description || `Assert text "${text}" is visible"`, async () => {
-            const locator: Locator = this.ensureIsLocator(element);
+            const locator: Locator = this.page.locator(element).first();
             await expect(locator).toHaveText(text);
-        })
+        });
     }
 
     async getVisibleText(element: string, description?: string): Promise<string> {
@@ -112,7 +112,7 @@ export class PageManager extends ReportManager {
                 result = '';
             }
             return result;
-        })
+        });
     }
 
     async assertElementIsVisible(element: string, description?: string): Promise<void> {
