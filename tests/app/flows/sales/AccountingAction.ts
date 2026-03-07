@@ -1,11 +1,11 @@
 import {SalesFlow} from './SalesFlow';
 import {Step} from '../../../decorators/step.decorator';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
-import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
-import {LoggedInUser, LogInUtils} from '../../../tools/utils/LogInUtils';
-import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
+import {DocStatesEnum} from '../../../enums/DocStatesEnum';
+import {LoggedInUser, LogInUtils} from '../../ui/auth/LogInUtils';
+import {ProfileRoles} from '../../data/ProfileRoles';
+import {DocTypesEnum} from '../../../enums/DocTypesEnum';
 import {SalesFlowContext} from './SalesFlowInitializer';
 
 export class AccountingAction extends SalesFlow {

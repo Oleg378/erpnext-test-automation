@@ -1,9 +1,12 @@
 import {apiTest} from '../../fixtures/api.test.fixture';
-import {ApiClient} from '../../app/api/ApiClient';
-import {Item, Supplier} from '../../tools/utils/record-types';
-import {TestDataFactory} from '../../tools/utils/TestDataFactory';
-import {ItemGroupEnum} from '../../tools/utils/enums/ItemGroupEnum';
-import {UOMEnum} from '../../tools/utils/enums/UOMEnum';
+import {TestDataFactory} from '../../app/data/TestDataFactory';
+import {ItemGroupEnum} from '../../enums/ItemGroupEnum';
+import {UOMEnum} from '../../enums/UOMEnum';
+import {AuthClient} from '../../app/api-clients/auth-client/AuthClient';
+import {ItemClient} from '../../app/api-clients/item-client/ItemClient';
+import {SupplierClient} from '../../app/api-clients/supplier-client/SupplierClient';
+import {Item} from '../../app/types/item.type';
+import {Supplier} from '../../app/types/supplier.type';
 
 const supplier: Supplier = {
     supplier_name: `supplier4item.spec_${TestDataFactory.generateUID()}`
@@ -11,19 +14,19 @@ const supplier: Supplier = {
 const item: Item = TestDataFactory.generateItemInfo(ItemGroupEnum.PRODUCTS, UOMEnum.KG)
 
 apiTest.beforeAll(async ({apiManager}) => {
-    await ApiClient.postRetrieveAdminCookies(apiManager, false);
-    await ApiClient.postCreateNewSupplier(supplier, apiManager, false);
+    await AuthClient.postRetrieveAdminCookies(apiManager, false);
+    await SupplierClient.postCreateNewSupplier(supplier, apiManager, false);
 });
 
-apiTest.describe('Create item @item @api', () => {
+apiTest.describe('Create item @item @api-clients', () => {
     apiTest.describe.configure({ mode: 'serial' });
     apiTest('Create new Item', async ({apiManager}) => {
-        await ApiClient.postRetrieveAdminCookies(apiManager);
-        await ApiClient.postCreateNewItem(item, apiManager);
+        await AuthClient.postRetrieveAdminCookies(apiManager);
+        await ItemClient.postCreateNewItem(item, apiManager);
     })
 
     apiTest('Set supplier for Item', async ({apiManager}) => {
-        await ApiClient.postRetrieveAdminCookies(apiManager);
-        await ApiClient.putUpdateItemSupplier(item, supplier, apiManager)
+        await AuthClient.postRetrieveAdminCookies(apiManager);
+        await ItemClient.putUpdateItemSupplier(item, supplier, apiManager)
     })
 })

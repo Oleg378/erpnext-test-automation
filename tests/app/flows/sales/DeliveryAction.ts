@@ -1,12 +1,12 @@
 import {SalesFlow} from './SalesFlow';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
 import {AccountingAction} from './AccountingAction';
-import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
-import {LoggedInUser, LogInUtils} from '../../../tools/utils/LogInUtils';
-import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {Navigation} from '../../components/Navigation';
-import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
+import {DocStatesEnum} from '../../../enums/DocStatesEnum';
+import {LoggedInUser, LogInUtils} from '../../ui/auth/LogInUtils';
+import {ProfileRoles} from '../../data/ProfileRoles';
+import {Navigation} from '../../ui/components/Navigation';
+import {DocTypesEnum} from '../../../enums/DocTypesEnum';
 import {Step} from '../../../decorators/step.decorator';
 import {SalesFlowContext} from './SalesFlowInitializer';
 
@@ -32,10 +32,10 @@ export class DeliveryAction extends SalesFlow {
 
     @Step('Inventory User: Create and Submit Delivery Note')
     private async executeCreateAndSubmitDeliveryNote(): Promise<void> {
-        if (this.context.purchaseReceipt?.status != DocStatesEnum.TO_BILL) {
+        if (this.context.purchaseReceipt?.status !== DocStatesEnum.TO_BILL) {
             throw new Error('Cannot create Delivery Note: Purchase Receipt is undefined or not submitted!');
         }
-        if (this.context.salesOrder?.status != DocStatesEnum.TO_DELIVER_AND_BILL) {
+        if (this.context.salesOrder?.status !== DocStatesEnum.TO_DELIVER_AND_BILL) {
             throw new Error('Cannot create Delivery Note: Sales Order is undefined or not submitted!');
         }
         const loggedInUser: LoggedInUser = await LogInUtils.ensureUserLoggedIn(

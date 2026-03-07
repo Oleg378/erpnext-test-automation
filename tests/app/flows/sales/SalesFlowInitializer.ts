@@ -1,21 +1,24 @@
-import {Customer, ErpDocument, Item, Supplier} from '../../../tools/utils/record-types';
-import {DataUtils} from '../../../tools/utils/DataUtils';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
-import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {HomePage} from '../../pages/navigation/HomePage';
-import {Navigation} from '../../components/Navigation';
-import {TestDataFactory} from '../../../tools/utils/TestDataFactory';
-import {ItemGroupEnum} from '../../../tools/utils/enums/ItemGroupEnum';
-import {UOMEnum} from '../../../tools/utils/enums/UOMEnum';
-import {ORDER_TYPES, QUOTATION_TO_TYPES, QuotationPage} from '../../pages/domains/sales/quotation/QuotationPage';
-import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
-import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
-import {NewQuotationPage} from '../../pages/domains/sales/quotation/NewQuotationPage';
+import {ErpDocument} from '../../types/document.type';
+import {TestDataSetup} from '../../data/TestDataSetup';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
+import {ProfileRoles} from '../../data/ProfileRoles';
+import {HomePage} from '../../ui/pages/navigation/HomePage';
+import {Navigation} from '../../ui/components/Navigation';
+import {TestDataFactory} from '../../data/TestDataFactory';
+import {ItemGroupEnum} from '../../../enums/ItemGroupEnum';
+import {UOMEnum} from '../../../enums/UOMEnum';
+import {ORDER_TYPES, QUOTATION_TO_TYPES, QuotationPage} from '../../ui/pages/domains/sales/quotation/QuotationPage';
+import {DocStatesEnum} from '../../../enums/DocStatesEnum';
+import {DocTypesEnum} from '../../../enums/DocTypesEnum';
+import {NewQuotationPage} from '../../ui/pages/domains/sales/quotation/NewQuotationPage';
 import {Step} from '../../../decorators/step.decorator';
 import {QuotationAction} from './QuotationAction';
 import {SalesFlow} from './SalesFlow';
-import {LogInUtils} from '../../../tools/utils/LogInUtils';
+import {LogInUtils} from '../../ui/auth/LogInUtils';
+import {Customer} from '../../types/customer.type';
+import {Item} from '../../types/item.type';
+import {Supplier} from '../../types/supplier.type';
 
 export interface SalesFlowConfig {
     items?: Map<Item, number>;
@@ -65,8 +68,8 @@ export class SalesFlowInitializer extends SalesFlow {
 
     @Step('Initiate test data')
     private async init() {
-        await DataUtils.ensureItemsWithPricingAndSupplier(this.apiManager, Array.from(this.context.items.keys()), this.context.supplier);
-        await DataUtils.ensureCustomerExists(this.apiManager, this.context.customer);
+        await TestDataSetup.ensureItemsWithPricingAndSupplier(this.apiManager, Array.from(this.context.items.keys()), this.context.supplier);
+        await TestDataSetup.ensureCustomerExists(this.apiManager, this.context.customer);
     }
 
     /**

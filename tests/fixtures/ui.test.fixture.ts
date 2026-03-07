@@ -1,5 +1,5 @@
 import { test as baseTest } from '@playwright/test';
-import { PageManager } from '../tools/manager/PageManager';
+import { PageManager } from '../managers/PageManager';
 
 export const uiTest = baseTest.extend<{
     pageManager: PageManager;

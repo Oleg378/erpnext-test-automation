@@ -1,13 +1,13 @@
 import {SalesFlow} from './SalesFlow';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
 import {DeliveryAction} from './DeliveryAction';
-import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
-import {LoggedInUser, LogInUtils} from '../../../tools/utils/LogInUtils';
-import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {Navigation} from '../../components/Navigation';
+import {DocStatesEnum} from '../../../enums/DocStatesEnum';
+import {LoggedInUser, LogInUtils} from '../../ui/auth/LogInUtils';
+import {ProfileRoles} from '../../data/ProfileRoles';
+import {Navigation} from '../../ui/components/Navigation';
 import {Step} from '../../../decorators/step.decorator';
-import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
+import {DocTypesEnum} from '../../../enums/DocTypesEnum';
 import {SalesFlowContext} from './SalesFlowInitializer';
 
 export class ProcurementAction extends SalesFlow {
@@ -54,7 +54,7 @@ export class ProcurementAction extends SalesFlow {
 
     @Step('Inventory User: Create and Submit Material Request')
     private async executeCreateAndSubmitMaterialRequest(): Promise<void> {
-        if (this.context.salesOrder?.status != DocStatesEnum.TO_DELIVER_AND_BILL) {
+        if (this.context.salesOrder?.status !== DocStatesEnum.TO_DELIVER_AND_BILL) {
             throw new Error('Cannot create Material request: sales order is undefined or not submitted!');
         }
         const loggedInUser: LoggedInUser = await LogInUtils.ensureUserLoggedIn(
@@ -85,7 +85,7 @@ export class ProcurementAction extends SalesFlow {
 
     @Step('Purchase User: Create and Submit Purchase Order')
     private async executeCreateAndSubmitPurchaseOrder(): Promise<void> {
-        if (this.context.materialRequest?.status != DocStatesEnum.PENDING) {
+        if (this.context.materialRequest?.status !== DocStatesEnum.PENDING) {
             throw new Error('Cannot create Purchase order: Material request is undefined or not submitted!');
         }
         const loggedInUser: LoggedInUser = await LogInUtils.ensureUserLoggedIn(
@@ -117,7 +117,7 @@ export class ProcurementAction extends SalesFlow {
 
     @Step('Purchase User: Create and Submit Purchase Receipt')
     private async executeCreateAndSubmitPurchaseReceipt(): Promise<void> {
-        if (this.context.purchaseOrder?.status != DocStatesEnum.TO_RECEIVE_AND_BILL) {
+        if (this.context.purchaseOrder?.status !== DocStatesEnum.TO_RECEIVE_AND_BILL) {
             throw new Error('Cannot create Purchase Receipt: Purchase Order is undefined or not submitted!');
         }
         const loggedInUser: LoggedInUser = await LogInUtils.ensureUserLoggedIn(

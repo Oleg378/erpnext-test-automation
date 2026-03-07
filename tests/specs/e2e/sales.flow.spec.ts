@@ -1,15 +1,19 @@
 import {test} from '../../fixtures/combined.test.fixture';
 import {SalesFlowInitializer, SalesFlowConfig} from '../../app/flows/sales/SalesFlowInitializer';
-import {Customer, Item, QuotationResponse, SalesOrderResponse, Supplier} from '../../tools/utils/record-types';
-import {TestDataFactory} from '../../tools/utils/TestDataFactory';
-import {ItemGroupEnum} from '../../tools/utils/enums/ItemGroupEnum';
-import {UOMEnum} from '../../tools/utils/enums/UOMEnum';
+import {TestDataFactory} from '../../app/data/TestDataFactory';
+import {ItemGroupEnum} from '../../enums/ItemGroupEnum';
+import {UOMEnum} from '../../enums/UOMEnum';
 import {DeliveryAction} from '../../app/flows/sales/DeliveryAction';
 import {expect} from '@playwright/test';
 import {Step} from '../../decorators/step.decorator';
-import {ApiManager} from '../../tools/manager/ApiManager';
-import {ApiClient} from '../../app/api/ApiClient';
+import {ApiManager} from '../../managers/ApiManager';
+import {SalesClient} from '../../app/api-clients/sales-client/SalesClient';
 import {ProcurementAction} from '../../app/flows/sales/ProcurementAction';
+import {AuthClient} from '../../app/api-clients/auth-client/AuthClient';
+import {Customer} from '../../app/types/customer.type';
+import {QuotationResponse, SalesOrderResponse} from '../../app/api-clients/sales-client/sales.schemas';
+import {Item} from '../../app/types/item.type';
+import {Supplier} from '../../app/types/supplier.type';
 
 
 const ITEMS: Map<Item, number> = new Map<Item, number>([
@@ -34,8 +38,8 @@ let flow: ProcurementAction | DeliveryAction;
 class SalesFlowAssertions {
     @Step('Assert Quotation status')
     static async assertQuotationStatus(quotationName: string, apiManager: ApiManager): Promise<void> {
-        await ApiClient.postRetrieveAdminCookies(apiManager);
-        const parsedResponse: QuotationResponse = await ApiClient.getQuotation(quotationName, apiManager);
+        await AuthClient.postRetrieveAdminCookies(apiManager);
+        const parsedResponse: QuotationResponse = await SalesClient.getQuotation(quotationName, apiManager);
         const quotationStatus = parsedResponse.data.status
         expect(quotationStatus, 'Quotation status should be "Ordered"').toBe('Ordered');
     }
@@ -46,8 +50,8 @@ class SalesFlowAssertions {
         expected: {status: string, delivery_status: string, billing_status: string},
         apiManager: ApiManager
     ): Promise<void> {
-        await ApiClient.postRetrieveAdminCookies(apiManager);
-        const parsedResponse: SalesOrderResponse = await ApiClient.getSalesOrder(salesOrderName, apiManager);
+        await AuthClient.postRetrieveAdminCookies(apiManager);
+        const parsedResponse: SalesOrderResponse = await SalesClient.getSalesOrder(salesOrderName, apiManager);
         expect(parsedResponse.data.status, `Sales Order status should be "${expected.status}"`)
             .toBe(expected.status);
         expect(parsedResponse.data.delivery_status, `Sales Order delivery_status should be "${expected.delivery_status}"`)

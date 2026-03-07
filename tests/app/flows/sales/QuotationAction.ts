@@ -1,13 +1,13 @@
 import {SalesFlowContext} from './SalesFlowInitializer';
 import {Step} from '../../../decorators/step.decorator';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
-import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
-import {LoggedInUser, LogInUtils} from '../../../tools/utils/LogInUtils';
-import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {QuotationListPage} from '../../pages/domains/sales/quotation/QuotationListPage';
-import {Navigation} from '../../components/Navigation';
-import {QuotationPage} from '../../pages/domains/sales/quotation/QuotationPage';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
+import {DocStatesEnum} from '../../../enums/DocStatesEnum';
+import {LoggedInUser, LogInUtils} from '../../ui/auth/LogInUtils';
+import {ProfileRoles} from '../../data/ProfileRoles';
+import {QuotationListPage} from '../../ui/pages/domains/sales/quotation/QuotationListPage';
+import {Navigation} from '../../ui/components/Navigation';
+import {QuotationPage} from '../../ui/pages/domains/sales/quotation/QuotationPage';
 import {SalesFlow} from './SalesFlow';
 import {SalesOrderAction} from './SalesOrderAction';
 

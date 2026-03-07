@@ -1,6 +1,6 @@
 import {SalesFlowContext} from './SalesFlowInitializer';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
 
 export abstract class SalesFlow {
     protected static readonly SALES_USERNAME: string = 'Sales_User';

@@ -1,10 +1,11 @@
 import {apiTest} from '../../fixtures/api.test.fixture';
-import {ApiClient} from '../../app/api/ApiClient';
-import {Customer} from '../../tools/utils/record-types';
-import {TestDataFactory} from '../../tools/utils/TestDataFactory';
+import {TestDataFactory} from '../../app/data/TestDataFactory';
 import {expect} from '@playwright/test';
-import {ApiManager} from '../../tools/manager/ApiManager';
+import {ApiManager} from '../../managers/ApiManager';
 import {Step} from '../../decorators/step.decorator';
+import {AuthClient} from '../../app/api-clients/auth-client/AuthClient';
+import {CustomerClient} from '../../app/api-clients/customer-client/CustomerClient';
+import {Customer} from '../../app/types/customer.type';
 
 const customer: Customer = {
     customer_name: `customer.spec_${TestDataFactory.generateUID()}`,
@@ -14,15 +15,15 @@ const customer: Customer = {
 class CustomerSpec {
     @Step('Assert Customer Exists')
     static async assertCustomerExists(apiManager: ApiManager):Promise<void> {
-        const isCustomer = await ApiClient.isCustomerExists(apiManager, customer)
+        const isCustomer = await CustomerClient.isCustomerExists(apiManager, customer)
         expect(isCustomer).toBeTruthy();
     }
 }
 
-apiTest.describe('Create Customer @customer @api', () => {
+apiTest.describe('Create Customer @customer @api-clients', () => {
     apiTest('Create new Customer', async ({apiManager}) => {
-        await ApiClient.postRetrieveAdminCookies(apiManager);
-        await ApiClient.postCreateNewCustomer(customer, apiManager);
+        await AuthClient.postRetrieveAdminCookies(apiManager);
+        await CustomerClient.postCreateNewCustomer(customer, apiManager);
         await CustomerSpec.assertCustomerExists(apiManager);
     })
 })

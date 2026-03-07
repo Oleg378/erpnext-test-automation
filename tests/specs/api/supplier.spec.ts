@@ -1,10 +1,11 @@
 import {apiTest} from '../../fixtures/api.test.fixture';
-import {ApiClient} from '../../app/api/ApiClient';
-import {Supplier} from '../../tools/utils/record-types';
-import {TestDataFactory} from '../../tools/utils/TestDataFactory';
+import {TestDataFactory} from '../../app/data/TestDataFactory';
 import {expect} from '@playwright/test';
-import {ApiManager} from '../../tools/manager/ApiManager';
+import {ApiManager} from '../../managers/ApiManager';
 import {Step} from '../../decorators/step.decorator';
+import {AuthClient} from '../../app/api-clients/auth-client/AuthClient';
+import {SupplierClient} from '../../app/api-clients/supplier-client/SupplierClient';
+import {Supplier} from '../../app/types/supplier.type';
 
 const supplier: Supplier = {
     supplier_name: `supplier.spec_${TestDataFactory.generateUID()}`
@@ -13,15 +14,15 @@ const supplier: Supplier = {
 class SupplierSpec {
     @Step('Assert Supplier Exists')
     static async assertSupplierExists(apiManager: ApiManager):Promise<void> {
-        const isSupplier = await ApiClient.isSupplierExists(apiManager, supplier)
+        const isSupplier = await SupplierClient.isSupplierExists(apiManager, supplier)
         expect(isSupplier).toBeTruthy();
     }
 }
 
-apiTest.describe('Create Supplier @supplier @api', () => {
+apiTest.describe('Create Supplier @supplier @api-clients', () => {
     apiTest('Create new Supplier', async ({apiManager}) => {
-        await ApiClient.postRetrieveAdminCookies(apiManager);
-        await ApiClient.postCreateNewSupplier(supplier, apiManager);
+        await AuthClient.postRetrieveAdminCookies(apiManager);
+        await SupplierClient.postCreateNewSupplier(supplier, apiManager);
         await SupplierSpec.assertSupplierExists(apiManager);
     })
 })

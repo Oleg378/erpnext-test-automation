@@ -1,14 +1,14 @@
 import {SalesFlow} from './SalesFlow';
 import {Step} from '../../../decorators/step.decorator';
-import {ApiManager} from '../../../tools/manager/ApiManager';
-import {PageManager} from '../../../tools/manager/PageManager';
-import {DocStatesEnum} from '../../../tools/utils/enums/DocStatesEnum';
-import {LoggedInUser, LogInUtils} from '../../../tools/utils/LogInUtils';
-import {ProfileRoles} from '../../../tools/ProfileRoles';
-import {NewSalesOrderPage} from '../../pages/domains/sales/sales-order/NewSalesOrderPage';
-import {Navigation} from '../../components/Navigation';
-import {SalesOrderPage} from '../../pages/domains/sales/sales-order/SalesOrderPage';
-import {DocTypesEnum} from '../../../tools/utils/enums/DocTypesEnum';
+import {ApiManager} from '../../../managers/ApiManager';
+import {PageManager} from '../../../managers/PageManager';
+import {DocStatesEnum} from '../../../enums/DocStatesEnum';
+import {LoggedInUser, LogInUtils} from '../../ui/auth/LogInUtils';
+import {ProfileRoles} from '../../data/ProfileRoles';
+import {NewSalesOrderPage} from '../../ui/pages/domains/sales/sales-order/NewSalesOrderPage';
+import {Navigation} from '../../ui/components/Navigation';
+import {SalesOrderPage} from '../../ui/pages/domains/sales/sales-order/SalesOrderPage';
+import {DocTypesEnum} from '../../../enums/DocTypesEnum';
 import {ProcurementAction} from './ProcurementAction';
 import {SalesFlowContext} from './SalesFlowInitializer';
 
@@ -35,7 +35,7 @@ export class SalesOrderAction extends SalesFlow {
     @Step('Sales User: Complete Sales Order Creation')
     private async executeCreateOrderAndSubmit(
     ): Promise<void> {
-        if (this.context.quotation?.status != DocStatesEnum.OPEN) {
+        if (this.context.quotation?.status !== DocStatesEnum.OPEN) {
             throw new Error('Cannot create sales order: quotation is undefined or not submitted!');
         }
         const loggedInUser: LoggedInUser = await LogInUtils.ensureUserLoggedIn(

@@ -31,13 +31,13 @@
   "homepage": "https://github.com/Oleg378/erpnext-test-automation#readme",
   "dependencies": {
     "@eslint/js": "^9.36.0",
-    "@playwright/test": "^1.58.0",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^24.3.0",
     "allure-js-commons": "^3.3.3",
     "allure-playwright": "^3.3.3",
     "dotenv": "^16.4.5",
     "globals": "^16.4.0",
-    "playwright": "^1.58.0",
+    "playwright": "^1.58.2",
     "ts-node": "^10.9.2",
     "zod": "^4.1.11"
   },

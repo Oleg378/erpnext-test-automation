@@ -1,6 +1,6 @@
 import {test} from '../fixtures/combined.test.fixture';
-import {ProfileRole, ProfileRoles} from '../tools/ProfileRoles';
-import {LogInUtils} from '../tools/utils/LogInUtils';
+import {ProfileRole, ProfileRoles} from '../app/data/ProfileRoles';
+import {LogInUtils} from '../app/ui/auth/LogInUtils';
 
 const profileRole: ProfileRole = ProfileRoles.Accounts
 
