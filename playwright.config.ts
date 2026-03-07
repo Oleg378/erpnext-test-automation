@@ -11,8 +11,7 @@ export default defineConfig({
         ['allure-playwright']
     ],
     use: {
-        //headless: process.env.HEADLESS !== 'false',
-        headless: false,
+        headless: process.env.HEADLESS !== 'false',
         viewport: { width: 1280, height: 720 },
         trace: 'retain-on-failure',
         baseURL: process.env.BASE_URL || 'http://localhost:8081/',
