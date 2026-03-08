@@ -22,7 +22,7 @@ export class PurchaseReceiptPage extends BaseDocumentPage {
             PurchaseReceiptPage.SUPPLIER_INPUT,
             supplier.supplier_name,
             `Set Supplier "${supplier.supplier_name}" for Purchase Receipt`)
-        await this.pageManager.pressEscape();
+        await this.pageManager.pressEnter();
         return this
     }
 

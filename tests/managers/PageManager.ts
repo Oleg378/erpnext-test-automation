@@ -42,7 +42,7 @@ export class PageManager extends ReportManager {
         return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
             await this.page.locator(input).click();
             await this.page.keyboard.type(value, { delay: 50 });
-            await this.wait(200);
+            await this.wait(400);
         });
     }
 
@@ -63,6 +63,10 @@ export class PageManager extends ReportManager {
 
     async pressEscape(): Promise<void> {
         await this.page.keyboard.press('Escape', {delay: 200});
+    }
+
+    async pressEnter(): Promise<void> {
+        await this.page.keyboard.press('Enter', {delay: 200});
     }
 
     async fillDate(input: string, date: Date, description?: string): Promise<void> {

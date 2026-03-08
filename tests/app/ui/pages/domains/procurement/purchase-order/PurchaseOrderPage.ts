@@ -22,7 +22,7 @@ export class PurchaseOrderPage extends BaseDocumentPage {
             PurchaseOrderPage.SUPPLIER_INPUT,
             supplier.supplier_name,
             `Set Supplier "${supplier.supplier_name}" for Purchase Order`)
-        await this.pageManager.pressEscape();
+        await this.pageManager.pressEnter();
         return this
     }
 

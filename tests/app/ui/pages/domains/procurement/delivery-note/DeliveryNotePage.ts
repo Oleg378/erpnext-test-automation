@@ -23,7 +23,7 @@ export class DeliveryNotePage extends BaseDocumentPage {
             DeliveryNotePage.CUSTOMER_INPUT,
             customer.customer_name,
             `Set Customer "${customer.customer_name}" for Delivery Note`)
-        await this.pageManager.pressEscape();
+        await this.pageManager.pressEnter();
         return this
     }
 
