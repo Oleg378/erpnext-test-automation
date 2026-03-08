@@ -26,7 +26,6 @@ export class QuotationPage extends BaseDocumentPage {
     private static readonly MODAL_WINDOW_SEARCH_INPUT: string = 'input.input-with-feedback[data-fieldname="txt"]:visible';
     private static readonly MODAL_WINDOW_SEARCH_BUTTON: string = 'button:has-text("Search"):visible';
     private static readonly MODAL_WINDOW_SET_QUANTITY_BUTTON : string = 'button:has-text("Set Quantity"):visible';
-    private static readonly CLOSE_MODAL_WINDOW_BUTTON: string = '.btn-modal-close:visible';
 
     constructor(pageManager: PageManager) {
         super(pageManager);
