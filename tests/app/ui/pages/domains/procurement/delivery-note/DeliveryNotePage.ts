@@ -19,7 +19,7 @@ export class DeliveryNotePage extends BaseDocumentPage {
     }
 
     async setCustomer(customer: Customer): Promise<this> {
-        await this.pageManager.fillInput(
+        await this.pageManager.typeInput(
             DeliveryNotePage.CUSTOMER_INPUT,
             customer.customer_name,
             `Set Customer "${customer.customer_name}" for Delivery Note`)

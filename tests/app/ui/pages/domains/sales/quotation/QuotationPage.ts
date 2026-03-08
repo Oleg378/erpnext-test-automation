@@ -99,10 +99,8 @@ export class QuotationPage extends BaseDocumentPage {
                 'Click on Set Quantity button'
             );
         }
-        await this.pageManager.click(
-            QuotationPage.CLOSE_MODAL_WINDOW_BUTTON,
-            'Close modal window'
-            );
+        await this.pageManager.wait(200);
+        await this.pageManager.pressEscape();
         return this;
     }
 

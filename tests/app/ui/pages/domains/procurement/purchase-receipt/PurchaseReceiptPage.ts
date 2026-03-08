@@ -12,13 +12,13 @@ export class PurchaseReceiptPage extends BaseDocumentPage {
     }
 
     @Step('Fill Items in Purchase Receipt Based on Purchase Order')
-    async getItemsPurchaseOrder(purchaseOrder: ErpDocument): Promise<this> {
+    async getItemsFromPurchaseOrder(purchaseOrder: ErpDocument): Promise<this> {
         await ItemsPickerModal.transferItemsFrom(this.pageManager, purchaseOrder);
         return this;
     }
 
     async setSupplier(supplier: Supplier): Promise<this> {
-        await this.pageManager.fillInput(
+        await this.pageManager.typeInput(
             PurchaseReceiptPage.SUPPLIER_INPUT,
             supplier.supplier_name,
             `Set Supplier "${supplier.supplier_name}" for Purchase Receipt`)

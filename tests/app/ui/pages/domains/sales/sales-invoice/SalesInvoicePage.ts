@@ -6,7 +6,7 @@ import {Step} from '../../../../../../decorators/step.decorator';
 import {NewPaymentEntryPage} from '../../accounting/payment-entry/NewPaymentEntryPage';
 
 export class SalesInvoicePage extends BaseDocumentPage {
-    private static readonly CREATE_MENU_BUTTON: string = 'button:has-text("Create"):visible'
+    private static readonly CREATE_MENU_BUTTON: string = '[class="btn ellipsis btn-primary"]:visible'
     private static readonly PAYMENT_ENTRY_OPTION: string = 'a[data-label="Payment"]:visible'
 
     constructor(pageManager: PageManager) {

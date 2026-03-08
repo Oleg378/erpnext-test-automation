@@ -23,12 +23,7 @@ export class SalesOrderPage extends BaseDocumentPage {
     }
 
     async setDeliveryDate(date: Date): Promise<this> {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        const formattedDate = `${day}-${month}-${year}`;
-        await this.pageManager.fillDate(SalesOrderPage.DELIVERY_DATE_INPUT, formattedDate, 'Fill delivery Date');
-
+        await this.pageManager.fillDate(SalesOrderPage.DELIVERY_DATE_INPUT, date, 'Fill delivery Date');
         return this;
     }
 }

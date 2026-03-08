@@ -27,7 +27,7 @@ export class PageManager extends ReportManager {
 
     async click(selector: string, description?: string): Promise<void> {
         return this.withStep(description || `Click on ${selector}`, async () => {
-            await this.page.locator(selector).first().click();
+            await this.page.locator(selector).click();
         });
     }
 
@@ -35,6 +35,14 @@ export class PageManager extends ReportManager {
         return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
             const locator: Locator = this.page.locator(input).first();
             await locator.fill(value);
+        });
+    }
+
+    async typeInput(input: string, value: string, description?: string): Promise<void> {
+        return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
+            await this.page.locator(input).click();
+            await this.page.keyboard.type(value, { delay: 50 });
+            await this.wait(200);
         });
     }
 
@@ -54,16 +62,20 @@ export class PageManager extends ReportManager {
     }
 
     async pressEscape(): Promise<void> {
-        await this.wait(300);
         await this.page.keyboard.press('Escape', {delay: 200});
     }
 
-    async fillDate(input: string, value: string, description?: string): Promise<void> {
-        return this.withStep(description || `Fill input ${input} with "${value}"`,  async () => {
+    async fillDate(input: string, date: Date, description?: string): Promise<void> {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+
+        return this.withStep(description || `Fill input ${input} with "${formattedDate}"`,  async () => {
             const locator: Locator = this.page.locator(input).first();
             await locator.click();
-            await locator.pressSequentially(value);
-            await this.page.keyboard.press('Enter');
+            await locator.pressSequentially(formattedDate);
+            await this.pressEscape();
         });
     }
 

@@ -135,7 +135,7 @@ export class ProcurementAction extends SalesFlow {
                 purchaseReceiptList => purchaseReceiptList.openNewPurchaseReceiptPage()
             );
         await newPurchaseReceipt.setSupplier(this.context.supplier);
-        await newPurchaseReceipt.getItemsPurchaseOrder(this.context.purchaseOrder);
+        await newPurchaseReceipt.getItemsFromPurchaseOrder(this.context.purchaseOrder);
         const purchaseReceiptPage = await newPurchaseReceipt.saveDocument();
         const documentName = await purchaseReceiptPage.getDocumentName();
 

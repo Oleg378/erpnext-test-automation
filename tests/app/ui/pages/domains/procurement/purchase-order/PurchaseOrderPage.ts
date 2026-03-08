@@ -18,7 +18,7 @@ export class PurchaseOrderPage extends BaseDocumentPage {
     }
 
     async setSupplier(supplier: Supplier): Promise<this> {
-        await this.pageManager.fillInput(
+        await this.pageManager.typeInput(
             PurchaseOrderPage.SUPPLIER_INPUT,
             supplier.supplier_name,
             `Set Supplier "${supplier.supplier_name}" for Purchase Order`)
