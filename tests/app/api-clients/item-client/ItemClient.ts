@@ -58,9 +58,9 @@ export abstract class ItemClient {
     }
 
     static async isItemPriceExists(
-        apiManager: ApiManager,
         item: Item,
         priceList: string,
+        apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<boolean> {
         const responseSchema = z.object({
@@ -95,10 +95,10 @@ export abstract class ItemClient {
 
     @Step('Update Price for Item')
     static async postPriceForItem(
-        apiManager: ApiManager,
         item: Item,
         priceList: string,
         priceRate: number,
+        apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<ItemPriceResponse> {
         const itemPrice = {

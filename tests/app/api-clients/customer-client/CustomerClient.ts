@@ -36,8 +36,8 @@ export abstract class CustomerClient {
     }
 
     static async isCustomerExists(
-        apiManager: ApiManager,
         customer: Customer,
+        apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<boolean> {
         return await apiManager.isRecordExists(

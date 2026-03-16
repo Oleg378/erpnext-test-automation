@@ -46,8 +46,8 @@ export abstract class CompanyClient {
     }
 
     static async isCompanyExists(
-        apiManager: ApiManager,
         companyName: string,
+        apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<boolean> {
         return await apiManager.isRecordExists(

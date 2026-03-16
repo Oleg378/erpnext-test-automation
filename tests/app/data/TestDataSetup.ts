@@ -36,7 +36,7 @@ export abstract class TestDataSetup {
         enableSteps: boolean = true
     ): Promise<void> {
         await AuthClient.postRetrieveAdminCookies(apiManager, enableSteps);
-        if (!await SupplierClient.isSupplierExists(apiManager, supplier, enableSteps)) {
+        if (!await SupplierClient.isSupplierExists(supplier, apiManager, enableSteps)) {
             await SupplierClient.postCreateNewSupplier(supplier, apiManager, enableSteps);
         }
     }
@@ -47,9 +47,9 @@ export abstract class TestDataSetup {
         enableSteps: boolean = true
     ): Promise<boolean> {
         return await ItemClient.isItemPriceExists(
-            apiManager,
             item,
             TestDataFactory.DEFAULT_PRICE_LISTS.buying,
+            apiManager,
             enableSteps
         );
     }
@@ -60,9 +60,9 @@ export abstract class TestDataSetup {
         enableSteps: boolean = true
     ): Promise<boolean> {
         return await ItemClient.isItemPriceExists(
-            apiManager,
             item,
             TestDataFactory.DEFAULT_PRICE_LISTS.selling,
+            apiManager,
             enableSteps
         );
     }
@@ -75,9 +75,9 @@ export abstract class TestDataSetup {
     ): Promise<void> {
         if (!await TestDataSetup.isStandardBuyingItemPriceExists(apiManager, item, enableSteps)) {
             await ItemClient.postPriceForItem(
-                apiManager,
                 item, TestDataFactory.DEFAULT_PRICE_LISTS.buying,
                 TestDataFactory.DEFAULT_PRICE.buying,
+                apiManager,
                 enableSteps
             );
         }
@@ -91,9 +91,9 @@ export abstract class TestDataSetup {
     ): Promise<void> {
         if (!await TestDataSetup.isStandardSellingItemPriceExists(apiManager, item, enableSteps)) {
             await ItemClient.postPriceForItem(
-                apiManager,
                 item, TestDataFactory.DEFAULT_PRICE_LISTS.selling,
                 TestDataFactory.DEFAULT_PRICE.selling,
+                apiManager,
                 enableSteps
             );
         }
@@ -106,7 +106,7 @@ export abstract class TestDataSetup {
         enableSteps: boolean = true
     ): Promise<void> {
         await AuthClient.postRetrieveAdminCookies(apiManager, enableSteps);
-        if (!await CustomerClient.isCustomerExists(apiManager, customer, enableSteps)) {
+        if (!await CustomerClient.isCustomerExists(customer, apiManager, enableSteps)) {
             await CustomerClient.postCreateNewCustomer(customer, apiManager, enableSteps);
         }
     }
@@ -118,7 +118,7 @@ export abstract class TestDataSetup {
         enableSteps: boolean = true
     ): Promise<void> {
         await AuthClient.postRetrieveAdminCookies(apiManager, enableSteps);
-        if (!await UserClient.isUserExists(apiManager, user, enableSteps)) {
+        if (!await UserClient.isUserExists(user, apiManager, enableSteps)) {
             await UserClient.postCreateNewUser(user, apiManager, enableSteps);
         }
     }

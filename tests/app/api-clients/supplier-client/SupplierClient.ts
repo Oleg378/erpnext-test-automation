@@ -36,8 +36,8 @@ export abstract class SupplierClient {
     }
 
     static async isSupplierExists(
-        apiManager: ApiManager,
         supplier: Supplier,
+        apiManager: ApiManager,
         enableSteps: boolean = true
     ): Promise<boolean> {
         return await apiManager.isRecordExists(

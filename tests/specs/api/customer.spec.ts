@@ -15,7 +15,7 @@ const customer: Customer = {
 class CustomerSpec {
     @Step('Assert Customer Exists')
     static async assertCustomerExists(apiManager: ApiManager):Promise<void> {
-        const isCustomer = await CustomerClient.isCustomerExists(apiManager, customer)
+        const isCustomer = await CustomerClient.isCustomerExists(customer, apiManager)
         expect(isCustomer).toBeTruthy();
     }
 }

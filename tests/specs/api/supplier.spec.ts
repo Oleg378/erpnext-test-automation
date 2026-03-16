@@ -14,7 +14,7 @@ const supplier: Supplier = {
 class SupplierSpec {
     @Step('Assert Supplier Exists')
     static async assertSupplierExists(apiManager: ApiManager):Promise<void> {
-        const isSupplier = await SupplierClient.isSupplierExists(apiManager, supplier)
+        const isSupplier = await SupplierClient.isSupplierExists(supplier, apiManager)
         expect(isSupplier).toBeTruthy();
     }
 }
